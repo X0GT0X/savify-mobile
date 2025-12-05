@@ -1,24 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { store } from '@/store/store';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import NotificationController from '@/components/notifications/notification-controller';
+import AppContent from '@/components/root/app-content';
+import '@/translations/i18n.config';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
+const RootLayout = () => {
+  return (
+    <Provider store={store}>
+      <GestureHandlerRootView>
+        <SafeAreaProvider>
+          <NotificationController />
+          <AppContent />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </Provider>
+  );
 };
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
-}
+export default RootLayout;
