@@ -1,9 +1,23 @@
 {
+  "Nothing was found for your request": "За вашим запитом нічого не знайдено",
+  "Something went wrong. Please try again later": "Щось пішло не так. Будь ласка, спробуйте пізніше",
+  "You have been signed out. Please sign in again": "Вас було вилоговано. Будь ласка, залогуйтеся знову",
+
   "Empower Your Finances with Savify: Track, Achieve, and Thrive!": "Прокачай свої фінанси з Savify: відстежуй, досягай і процвітай!",
   "By continuing you confirm that you agree to ours": "Продовжуючи, ви підтверджуєте, що згодні з нашими",
   "with_Terms of Service": "Умовами надання послуг",
   "and": "та",
   "with_Privacy Policy": "Політикою конфіденційності",
   "Terms of Service": "Умови надання послуг",
-  "Privacy Policy": "Політика конфіденційності"
+  "Privacy Policy": "Політика конфіденційності",
+
+  "Home": "Головна",
+  "Overview": "Огляд",
+  "Analytics": "Аналітика",
+  "Settings": "Налаштування",
+
+  "Sign out": "Вийти",
+  "Are you sure you want to sign out": "Ви впевнені, що хочете вийти",
+  "Cancel": "Скасувати",
+  "Yes": "Так"
 }

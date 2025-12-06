@@ -1,9 +1,23 @@
 {
+  "Nothing was found for your request": "Nothing was found for your request",
+  "Something went wrong. Please try again later": "Something went wrong. Please try again later",
+  "You have been signed out. Please sign in again": "You have been signed out. Please sign in again",
+
   "Empower Your Finances with Savify: Track, Achieve, and Thrive!": "Empower Your Finances with Savify: Track, Achieve, and Thrive!",
   "By continuing you confirm that you agree to ours": "By continuing you confirm that you agree to ours",
   "with_Terms of Service": "Terms of Service",
   "and": "and",
   "with_Privacy Policy": "Privacy Policy",
   "Terms of Service": "Terms of Service",
-  "Privacy Policy": "Privacy Policy"
+  "Privacy Policy": "Privacy Policy",
+
+  "Home": "Home",
+  "Overview": "Overview",
+  "Analytics": "Analytics",
+  "Settings": "Settings",
+
+  "Sign out": "Sign out",
+  "Are you sure you want to sign out": "Are you sure you want to sign out",
+  "Cancel": "Cancel",
+  "Yes": "Yes"
 }

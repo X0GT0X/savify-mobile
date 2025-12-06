@@ -1,24 +1,27 @@
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useTranslation } from 'react-i18next';
 import { DynamicColorIOS } from 'react-native';
 
 const TabLayout = () => {
+  const { t } = useTranslation();
+
   return (
     <NativeTabs tintColor={DynamicColorIOS({ light: '#202020', dark: '#FFFFFF' })}>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <Label>{t('Home')}</Label>
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="overview">
-        <Label>Overview</Label>
+        <Label>{t('Overview')}</Label>
         <Icon sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="analytics">
-        <Label>Analytics</Label>
+        <Label>{t('Analytics')}</Label>
         <Icon sf={{ default: 'chart.bar', selected: 'chart.bar.fill' }} />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
-        <Label>Settings</Label>
+        <Label>{t('Settings')}</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
