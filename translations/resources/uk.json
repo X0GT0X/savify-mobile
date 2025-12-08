@@ -19,5 +19,9 @@
   "Sign out": "Вийти",
   "Are you sure you want to sign out": "Ви впевнені, що хочете вийти",
   "Cancel": "Скасувати",
-  "Yes": "Так"
+  "Yes": "Так",
+
+  "Income": "Дохід",
+  "Expense": "Витрата",
+  "Wallet": "Гаманець"
 }

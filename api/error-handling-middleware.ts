@@ -17,21 +17,21 @@ export const ErrorHandlingMiddleware: Middleware = (api: MiddlewareAPI) => (next
     if (statusCode === 404) {
       store.dispatch(
         showNotification({
-          type: 'error',
+          type: 'danger',
           message: t('Nothing was found for your request'),
         }),
       );
     } else if (statusCode === 409) {
       store.dispatch(
         showNotification({
-          type: 'error',
+          type: 'danger',
           message: payload.data.detail,
         }),
       );
     } else if (!ignoredStatusCodes.includes(statusCode)) {
       store.dispatch(
         showNotification({
-          type: 'error',
+          type: 'danger',
           message: t('Something went wrong. Please try again later'),
         }),
       );

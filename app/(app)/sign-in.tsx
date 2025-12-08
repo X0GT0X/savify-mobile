@@ -70,7 +70,7 @@ const SignIn = () => {
       if (response.error.status === 401) {
         dispatch(
           showNotification({
-            type: 'error',
+            type: 'danger',
             message: response.error.data.detail,
           }),
         );
@@ -98,7 +98,7 @@ const SignIn = () => {
       } else {
         dispatch(
           showNotification({
-            type: 'error',
+            type: 'danger',
             message: t('Something went wrong. Please try again later'),
           }),
         );
@@ -107,7 +107,7 @@ const SignIn = () => {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         dispatch(
           showNotification({
-            type: 'error',
+            type: 'danger',
             message: t('Something went wrong. Please try again later'),
           }),
         );

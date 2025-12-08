@@ -6,7 +6,10 @@ const TabLayout = () => {
   const { t } = useTranslation();
 
   return (
-    <NativeTabs tintColor={DynamicColorIOS({ light: '#202020', dark: '#FFFFFF' })}>
+    <NativeTabs
+      labelStyle={{ color: DynamicColorIOS({ light: '#202020', dark: '#E6E6E6' }) }}
+      iconColor={DynamicColorIOS({ light: '#202020', dark: '#E6E6E6' })}
+      tintColor={DynamicColorIOS({ light: '#202020', dark: '#E6E6E6' })}>
       <NativeTabs.Trigger name="index">
         <Label>{t('Home')}</Label>
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />

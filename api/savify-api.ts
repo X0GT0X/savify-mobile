@@ -54,7 +54,7 @@ export const baseQueryWithReauth: BaseQueryFn<
           } else {
             api.dispatch(
               showNotification({
-                type: 'error',
+                type: 'danger',
                 message: t('You have been signed out. Please sign in again'),
               }),
             );

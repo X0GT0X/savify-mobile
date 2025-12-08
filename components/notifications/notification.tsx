@@ -88,7 +88,7 @@ const createStyles = (type: NotificationType, colorScheme: ColorSchemeName) =>
     },
     container: {
       // @ts-expect-error cannot use type as an array index
-      backgroundColor: Colors[colorScheme ?? 'light'][type ?? 'error'],
+      backgroundColor: Colors[colorScheme ?? 'light'][type ?? 'danger'],
       flexDirection: 'row',
       alignItems: 'center',
       padding: 20,

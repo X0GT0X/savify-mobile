@@ -9,7 +9,8 @@ export const Colors = {
   light: {
     text: '#202020',
     textOnDarkBackground: '#FFFFFF',
-    background: '#F8F8F8',
+    background: '#f1f1f1',
+    containerBackground: '#FFFFFF',
     white: '#FFFFFF',
 
     primary: '#202020',
@@ -24,7 +25,8 @@ export const Colors = {
   dark: {
     text: '#E6E6E6',
     textOnDarkBackground: '#FFFFFF', // TODO: probably to change
-    background: '#202020',
+    background: '#101010',
+    containerBackground: '#181818',
     white: '#FFFFFF',
 
     primary: '#E6E6E6',

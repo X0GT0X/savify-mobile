@@ -40,7 +40,7 @@ const SettingsScreen = () => {
 
         <ThemedView
           style={{
-            backgroundColor: Colors[colorScheme ?? 'light'].white,
+            backgroundColor: Colors[colorScheme ?? 'light'].containerBackground,
             borderRadius: 32,
             // padding: 24,
             marginTop: 24,
