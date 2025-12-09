@@ -6,4 +6,6 @@ export interface UserFinanceTrackingSettings {
   periodStartsOnDay: number;
 }
 
-export type BudgetingPeriod = 'Weekly' | 'Biweekly' | 'Monthly';
+export const BUDGETING_PERIODS = ['Weekly', 'Biweekly', 'Monthly'] as const;
+
+export type BudgetingPeriod = (typeof BUDGETING_PERIODS)[number];

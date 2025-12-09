@@ -135,14 +135,14 @@ const SettingsScreen = () => {
             <ActionMenuItem
               label={t('Budgeting period')}
               icon="calendar-outline"
-              onPress={() => {}}
+              onPress={() => router.navigate('../settings/budgeting-period-picker')}
               value={userSettings?.budgetingPeriod && t(userSettings?.budgetingPeriod)}
             />
 
             <ActionMenuItem
               label={t('Period starts')}
               icon="calendar-number-outline"
-              onPress={() => {}}
+              onPress={() => router.navigate('../settings/period-start-day-picker')}
               value={`${userSettings?.periodStartsOnDay}`}
             />
 

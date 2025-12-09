@@ -7,11 +7,13 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 const userSettingsApi = createApi({
   baseQuery: baseQueryWithReauth,
   reducerPath: 'userSettingsApi',
+  tagTypes: ['UserSettings'],
   endpoints: (builder) => ({
     getUserSettings: builder.query<UserFinanceTrackingSettings, void>({
       query: () => ({
         url: '/finance-tracking/settings',
       }),
+      providesTags: ['UserSettings'],
     }),
 
     getSupportedCurrencies: builder.query<string[], void>({
@@ -26,6 +28,7 @@ const userSettingsApi = createApi({
         method: HttpMethod.PATCH,
         body: settings,
       }),
+      invalidatesTags: ['UserSettings'],
     }),
   }),
 });
