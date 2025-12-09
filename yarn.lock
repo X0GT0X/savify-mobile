@@ -3007,6 +3007,14 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.2.3.tgz#ec48c0f3e993e50648c86da559e2610995cf989a"
   integrity sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==
 
+currency-codes@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/currency-codes/-/currency-codes-2.2.0.tgz#447624b22fd31c9d2b5c498e77246b5d53501c7e"
+  integrity sha512-vpbQc5sEYHGdTVAYUhHnKv0DWiYLRvzl/KKyqeHzBh7HD/j3UlWoScpZ9tN/jG6w2feddWoObsBbaNVu5yDapg==
+  dependencies:
+    first-match "~0.0.1"
+    nub "~0.0.0"
+
 currency-symbol-map@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/currency-symbol-map/-/currency-symbol-map-5.1.0.tgz#59531fbe977ba95e8d358e90e3c9e9053efb75ad"
@@ -3625,6 +3633,11 @@ expo-apple-authentication@~8.0.8:
   resolved "https://registry.yarnpkg.com/expo-apple-authentication/-/expo-apple-authentication-8.0.8.tgz#4982c99743ebf45bc961c5008927839aa1022310"
   integrity sha512-TwCHWXYR1kS0zaeV7QZKLWYluxsvqL31LFJubzK30njZqeWoWO89HZ8nZVaeXbFV1LrArKsze4BmMb+94wS0AQ==
 
+expo-application@~7.0.8:
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-7.0.8.tgz#320af0d6c39b331456d3bc833b25763c702d23db"
+  integrity sha512-qFGyxk7VJbrNOQWBbE09XUuGuvkOgFS9QfToaK2FdagM2aQ+x3CvGV2DuVgl/l4ZxPgIf3b/MNh9xHpwSwn74Q==
+
 expo-asset@~12.0.11:
   version "12.0.11"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-12.0.11.tgz#f1905538f35b7e3d6f730efbc633ce596d88f16d"
@@ -3637,6 +3650,11 @@ expo-blur@~15.0.8:
   version "15.0.8"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-15.0.8.tgz#846cea275a6644639c5c338987b4cca54cf93eca"
   integrity sha512-rWyE1NBRZEu9WD+X+5l7gyPRszw7n12cW3IRNAb5i6KFzaBp8cxqT5oeaphJapqURvcqhkOZn2k5EtBSbsuU7w==
+
+expo-clipboard@~8.0.8:
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-8.0.8.tgz#5e52054a4bbaebef090ec6fe5eaa200072ff94f7"
+  integrity sha512-VKoBkHIpZZDJTB0jRO4/PZskHdMNOEz3P/41tmM6fDuODMpqhvyWK053X0ebspkxiawJX9lX33JXHBCvVsTTOA==
 
 expo-constants@~18.0.11:
   version "18.0.11"
@@ -3968,6 +3986,11 @@ find-up@^5.0.0:
   dependencies:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
+
+first-match@~0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/first-match/-/first-match-0.0.1.tgz#a60ec642700f0f437234ebb7ec3f382476e542fd"
+  integrity sha512-VvKbnaxrC0polTFDC+teKPTdl2mn6B/KUW+WB3C9RzKDeNwbzfLdnUz3FxC+tnjvus6bI0jWrWicQyVIPdS37A==
 
 flat-cache@^4.0.0:
   version "4.0.1"
@@ -5626,6 +5649,11 @@ nth-check@^2.0.1:
   integrity sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==
   dependencies:
     boolbase "^1.0.0"
+
+nub@~0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/nub/-/nub-0.0.0.tgz#b369bd32bdde66af59605c3b0520bc219dccc04f"
+  integrity sha512-dK0Ss9C34R/vV0FfYJXuqDAqHlaW9fvWVufq9MmGF2umCuDbd5GRfRD9fpi/LiM0l4ZXf8IBB+RYmZExqCrf0w==
 
 nullthrows@^1.1.1:
   version "1.1.1"

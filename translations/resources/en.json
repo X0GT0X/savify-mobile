@@ -9,7 +9,9 @@
   "and": "and",
   "with_Privacy Policy": "Privacy Policy",
   "Terms of Service": "Terms of Service",
+  "Terms": "Terms",
   "Privacy Policy": "Privacy Policy",
+  "Policy": "Policy",
 
   "Home": "Home",
   "Overview": "Overview",
@@ -20,6 +22,21 @@
   "Are you sure you want to sign out": "Are you sure you want to sign out",
   "Cancel": "Cancel",
   "Yes": "Yes",
+  "Version": "Version",
+  "Your ID": "Your ID",
+
+  "Main currency": "Main currency",
+  "Budgeting period": "Budgeting period",
+  "Period starts": "Period starts",
+  "Monthly": "Monthly",
+  "Biweekly": "Biweekly",
+  "Weekly": "Weekly",
+
+  "US Dollar": "US Dollar",
+  "Euro": "Euro",
+  "Pound Sterling": "Pound Sterling",
+  "Zloty": "Zloty",
+  "Hryvnia": "Hryvnia",
 
   "Income": "Income",
   "Expense": "Expense",

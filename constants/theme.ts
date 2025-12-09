@@ -24,7 +24,7 @@ export const Colors = {
 
   dark: {
     text: '#E6E6E6',
-    textOnDarkBackground: '#FFFFFF', // TODO: probably to change
+    textOnDarkBackground: '#202020', // TODO: probably to change
     background: '#101010',
     containerBackground: '#181818',
     white: '#FFFFFF',

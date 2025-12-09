@@ -9,7 +9,9 @@
   "and": "та",
   "with_Privacy Policy": "Політикою конфіденційності",
   "Terms of Service": "Умови надання послуг",
+  "Terms": "Умови",
   "Privacy Policy": "Політика конфіденційності",
+  "Policy": "Політика",
 
   "Home": "Головна",
   "Overview": "Огляд",
@@ -20,6 +22,21 @@
   "Are you sure you want to sign out": "Ви впевнені, що хочете вийти",
   "Cancel": "Скасувати",
   "Yes": "Так",
+  "Version": "Версія",
+  "Your ID": "Ваш ID",
+
+  "Main currency": "Основна валюта",
+  "Budgeting period": "Період бюджетування",
+  "Period starts": "Початок періоду",
+  "Monthly": "Місяць",
+  "Biweekly": "2 тижні",
+  "Weekly": "Тиждень",
+
+  "US Dollar": "Долар США",
+  "Euro": "Євро",
+  "Pound Sterling": "Фунт Стерлінгів",
+  "Zloty": "Злотий",
+  "Hryvnia": "Гривня",
 
   "Income": "Дохід",
   "Expense": "Витрата",
