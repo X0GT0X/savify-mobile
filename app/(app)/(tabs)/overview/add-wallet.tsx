@@ -86,24 +86,13 @@ const AddWalletScreen = () => {
   const handleSubmit = async (values: AddWalletForm) => {
     const { name, icon, amount, currency, color, includeInTotalBalance } = values;
 
-    // Parse formatted amount (removes spaces/commas) and convert to minor units
     const numericAmount = parseCurrencyInput(amount);
     const amountInMinorUnits = convertToMinorUnits(numericAmount, currency);
-
-    console.log({
-      name,
-      icon: buildIconName(icon, 'ion'),
-      initialAmountBalance: amountInMinorUnits,
-      currency,
-      color,
-      includeInTotalBalance,
-    });
-    return;
 
     const response: Response<string> = await addWallet({
       name,
       icon: buildIconName(icon, 'ion'),
-      initialAmountBalance: amountInMinorUnits,
+      initialBalanceAmount: amountInMinorUnits,
       currency,
       color,
       includeInTotalBalance,
@@ -147,7 +136,7 @@ const AddWalletScreen = () => {
           const currency = this.parent.currency as string;
 
           // Use validation helper - negative values not allowed for initial wallet balance
-          return validateCurrencyAmount(value, currency, false);
+          return validateCurrencyAmount(value, currency, true);
         }),
     });
   }, [t]);
@@ -216,6 +205,7 @@ const AddWalletScreen = () => {
                 onAmountChange={handleChange('amount')}
                 onAmountBlur={() => handleBlur('amount')}
                 onCurrencyPress={() => handleOpenCurrencyPicker(values.currency)}
+                allowNegative
                 hasError={!!(errors.amount && touched.amount)}
                 name="amount"
                 containerStyle={{ marginBottom: 24 }}

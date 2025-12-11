@@ -4,9 +4,18 @@ import { FormActionInput } from '@/components/ui/form/form-action-input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatCurrencyInput } from '@/tools/input-formatters';
+import { SymbolView } from 'expo-symbols';
 import { ErrorMessage } from 'formik';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleProp, StyleSheet, TextInput, TextStyle, ViewStyle } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 
 export type FormCurrencyInputProps = {
   label: string;
@@ -41,10 +50,37 @@ export const FormCurrencyInput = ({
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  // Track whether the current value is negative
+  const [isNegative, setIsNegative] = useState(false);
+
   const handleAmountChange = (value: string) => {
     // Format input based on currency's decimal places and negative value setting
     const formattedValue = formatCurrencyInput(value, currencyValue, allowNegative);
     onAmountChange(formattedValue);
+
+    // Update negative state based on the formatted value
+    setIsNegative(formattedValue.startsWith('-'));
+  };
+
+  const handleToggleSign = () => {
+    if (!allowNegative) return;
+
+    const currentValue = amountValue || '0';
+    let newValue: string;
+
+    if (currentValue.startsWith('-')) {
+      // Remove negative sign
+      newValue = currentValue.substring(1);
+    } else if (currentValue === '' || currentValue === '0') {
+      // Don't add negative to empty or zero value
+      return;
+    } else {
+      // Add negative sign
+      newValue = '-' + currentValue;
+    }
+
+    onAmountChange(newValue);
+    setIsNegative(!isNegative);
   };
 
   return (
@@ -71,11 +107,17 @@ export const FormCurrencyInput = ({
             style={[styles.amountInput, { color: colors.text }]}
             placeholder="0.00"
             placeholderTextColor={colors.neutral}
-            keyboardType={allowNegative ? 'numbers-and-punctuation' : 'decimal-pad'}
+            keyboardType={'decimal-pad'}
             value={amountValue}
             onChangeText={handleAmountChange}
             onBlur={onAmountBlur}
           />
+
+          {allowNegative && (
+            <TouchableOpacity style={[styles.signToggle]} onPress={handleToggleSign}>
+              <SymbolView name="plusminus" size={20} tintColor={colors.neutral} />
+            </TouchableOpacity>
+          )}
         </ThemedView>
 
         <ThemedView style={styles.currencyInputWrapper}>
@@ -121,6 +163,12 @@ const styles = StyleSheet.create({
   },
   amountInput: {
     fontSize: 16,
+    flex: 1,
+  },
+  signToggle: {
+    position: 'absolute',
+    right: 16,
+    bottom: 18,
   },
   currencyInputWrapper: {
     flex: 1,
