@@ -2,6 +2,7 @@ import { HapticTab } from '@/components/haptic-tab';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ItemType } from '@/types/drag-drop';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -16,6 +17,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { DraggableGridItem } from './draggable-grid-item';
+import { DropTargetGridItem } from './drop-target-grid-item';
 
 export type Budget = {
   value: string;
@@ -23,7 +26,7 @@ export type Budget = {
   status: 'over' | 'under' | 'onTrack';
 };
 
-type GridItem = {
+export type GridItem = {
   id: string;
   label: string;
   value: string;
@@ -39,9 +42,17 @@ type GridProps = {
   items: GridItem[];
   gridHorizontalCount: number;
   gridVerticalCount: number;
+  enableDragDrop?: boolean;
+  gridType?: ItemType;
 };
 
-const OverviewGrid = ({ items, gridHorizontalCount, gridVerticalCount }: GridProps) => {
+const OverviewGrid = ({
+  items,
+  gridHorizontalCount,
+  gridVerticalCount,
+  enableDragDrop = false,
+  gridType = 'wallet',
+}: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);
 
@@ -64,6 +75,17 @@ const OverviewGrid = ({ items, gridHorizontalCount, gridVerticalCount }: GridPro
       setCurrentPage(page);
     },
     [screenWidth],
+  );
+
+  const handleEdgeScroll = useCallback(
+    (direction: 'left' | 'right') => {
+      if (direction === 'left' && currentPage > 0) {
+        scrollViewRef.current?.scrollTo({ x: (currentPage - 1) * screenWidth, animated: true });
+      } else if (direction === 'right' && currentPage < totalPages - 1) {
+        scrollViewRef.current?.scrollTo({ x: (currentPage + 1) * screenWidth, animated: true });
+      }
+    },
+    [currentPage, totalPages, screenWidth],
   );
 
   const resolveStatusColor = (status: Budget['status']) => {
@@ -128,53 +150,69 @@ const OverviewGrid = ({ items, gridHorizontalCount, gridVerticalCount }: GridPro
               };
               const fillColor = getFillColor();
 
+              const isAddNew = item.id.startsWith('new-');
+              const iconContent = (
+                <HapticTab
+                  onPress={item.onPress}
+                  style={[gridStyles.iconContainer, item.containerStyle]}>
+                  {percentage > 0 && (
+                    <>
+                      {/* Wave on top */}
+                      {percentage < 100 && (
+                        <Svg
+                          height={12}
+                          width="100%"
+                          viewBox={percentage < 80 ? '0 0 720 200' : '0 0 220 90'}
+                          preserveAspectRatio="none"
+                          style={{
+                            position: 'absolute',
+                            bottom: `${percentage}%`,
+                            left: 0,
+                          }}>
+                          <Path
+                            fill={fillColor}
+                            d="M0,128L40,112C80,96,160,64,240,80C320,96,400,160,480,186.7C560,213,640,203,720,186.7C800,171,880,149,960,154.7C1040,160,1120,192,1200,202.7C1280,213,1360,203,1400,197.3L1440,192L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"
+                          />
+                        </Svg>
+                      )}
+                      {/* Solid fill below the wave */}
+                      <View
+                        style={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: `${percentage}%`,
+                          bottom: 0,
+                          left: 0,
+                          borderBottomLeftRadius: 24,
+                          borderBottomRightRadius: 24,
+                          borderTopLeftRadius: percentage >= 100 ? 24 : 0,
+                          borderTopRightRadius: percentage >= 100 ? 24 : 0,
+                          backgroundColor: fillColor,
+                        }}
+                      />
+                    </>
+                  )}
+                  {resolveIcon(item)}
+                </HapticTab>
+              );
+
               return (
                 <View key={item.id} style={gridStyles.gridItem}>
                   <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
                     {item.label}
                   </ThemedText>
-                  <HapticTab
-                    onPress={item.onPress}
-                    style={[gridStyles.iconContainer, item.containerStyle]}>
-                    {percentage > 0 && (
-                      <>
-                        {/* Wave on top */}
-                        {percentage < 100 && (
-                          <Svg
-                            height={12}
-                            width="100%"
-                            viewBox={percentage < 80 ? '0 0 720 200' : '0 0 220 90'}
-                            preserveAspectRatio="none"
-                            style={{
-                              position: 'absolute',
-                              bottom: `${percentage}%`,
-                              left: 0,
-                            }}>
-                            <Path
-                              fill={fillColor}
-                              d="M0,128L40,112C80,96,160,64,240,80C320,96,400,160,480,186.7C560,213,640,203,720,186.7C800,171,880,149,960,154.7C1040,160,1120,192,1200,202.7C1280,213,1360,203,1400,197.3L1440,192L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"
-                            />
-                          </Svg>
-                        )}
-                        {/* Solid fill below the wave */}
-                        <View
-                          style={{
-                            position: 'absolute',
-                            width: '100%',
-                            height: `${percentage}%`,
-                            bottom: 0,
-                            left: 0,
-                            borderBottomLeftRadius: 24,
-                            borderBottomRightRadius: 24,
-                            borderTopLeftRadius: percentage >= 100 ? 24 : 0,
-                            borderTopRightRadius: percentage >= 100 ? 24 : 0,
-                            backgroundColor: fillColor,
-                          }}
-                        />
-                      </>
-                    )}
-                    {resolveIcon(item)}
-                  </HapticTab>
+                  {enableDragDrop && !isAddNew ? (
+                    <DraggableGridItem
+                      item={item}
+                      sourceType={gridType}
+                      onEdgeScroll={handleEdgeScroll}>
+                      <DropTargetGridItem item={item} targetType={gridType}>
+                        {iconContent}
+                      </DropTargetGridItem>
+                    </DraggableGridItem>
+                  ) : (
+                    iconContent
+                  )}
                   <ThemedText type="defaultSemiBold" style={gridStyles.value}>
                     {item.value}
                   </ThemedText>
