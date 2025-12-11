@@ -12,6 +12,7 @@ import { Colors } from '@/constants/theme';
 import { useGetUserSettingsQuery } from '@/features/finance-tracking/settings/api';
 import { useAddWalletMutation } from '@/features/finance-tracking/wallets/api';
 import { showNotification } from '@/features/notifications/state';
+import { convertToMinorUnits, getCurrencyMinorUnits } from '@/tools/currency';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -83,8 +84,18 @@ const AddWalletScreen = () => {
   const handleSubmit = async (values: AddWalletForm) => {
     const { name, icon, amount, currency, color, includeInTotalBalance } = values;
 
-    // Convert amount to minor units (cents)
-    const amountInMinorUnits = Math.round(parseFloat(amount) * 100);
+    // Convert amount to minor units based on currency
+    const amountInMinorUnits = convertToMinorUnits(parseFloat(amount), currency);
+
+    console.log({
+      name,
+      icon: buildIconName(icon, 'ion'),
+      initialAmountBalance: amountInMinorUnits,
+      currency,
+      color,
+      includeInTotalBalance,
+    });
+    return;
 
     const response: Response<string> = await addWallet({
       name,
@@ -125,8 +136,28 @@ const AddWalletScreen = () => {
     return Yup.object().shape({
       name: Yup.string().required(t('This field is required')),
       amount: Yup.string()
-        .matches(/^\d+(\.\d{1,2})?$/, t('Amount must be a valid number'))
-        .required(t('This field is required')),
+        .required(t('This field is required'))
+        .test('is-valid-amount', t('Amount must be a valid number'), function (value) {
+          if (!value) return false;
+
+          // Get the currency from the form context
+          const currency = this.parent.currency as string;
+          const minorUnits = getCurrencyMinorUnits(currency);
+
+          // Build regex pattern based on currency's decimal places
+          // For 0 decimals: /^\d+$/
+          // For 1 decimal: /^\d+(\.\d{1})?$/
+          // For 2 decimals: /^\d+(\.\d{1,2})?$/
+          // For 3 decimals: /^\d+(\.\d{1,3})?$/
+          let pattern: RegExp;
+          if (minorUnits === 0) {
+            pattern = /^\d+$/;
+          } else {
+            pattern = new RegExp(`^\\d+(\\.\\d{1,${minorUnits}})?$`);
+          }
+
+          return pattern.test(value);
+        }),
     });
   }, [t]);
 
