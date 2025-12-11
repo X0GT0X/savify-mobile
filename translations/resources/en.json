@@ -64,5 +64,18 @@
   "Enter category name": "Enter category name",
   "Category type": "Category type",
 
+  "Add wallet": "Add wallet",
+  "wallet.name": "Name",
+  "Enter wallet name": "Enter wallet name",
+  "Initial balance": "Initial balance",
+  "Amount": "Amount",
+  "Currency": "Currency",
+  "Color": "Color",
+  "Include in total balance": "Include in total balance",
+  "If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance": "If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance",
+  "Choose currency": "Choose currency",
+  "Enter amount": "Enter amount",
+  "Amount must be a valid number": "Amount must be a valid number",
+
   "This field is required": "This field is required"
 }
