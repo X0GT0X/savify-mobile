@@ -20,16 +20,8 @@ const OverviewScreen = () => {
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
 
-  const {
-    data: categories,
-    isLoading: isLoadingCategories,
-    isFetching: isFetchingCategories,
-  } = useGetCategoriesQuery();
-  const {
-    data: wallets,
-    isLoading: isLoadingWallets,
-    isFetching: isFetchingWallets,
-  } = useGetWalletsQuery();
+  const { data: categories, isLoading: isLoadingCategories } = useGetCategoriesQuery();
+  const { data: wallets, isLoading: isLoadingWallets } = useGetWalletsQuery();
 
   const incomeCategories = useMemo(
     () => categories?.filter((category) => category.type === 'Income') ?? [],
@@ -140,6 +132,7 @@ const OverviewScreen = () => {
               id: 'new-wallet',
               label: t('Wallet'),
               value: '',
+              onPress: () => router.navigate('/(app)/(tabs)/overview/add-wallet'),
               icon: 'add@ion',
               iconColor: Colors[colorScheme ?? 'light'].primary,
               containerStyle: {

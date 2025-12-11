@@ -64,5 +64,18 @@
   "Enter category name": "Введіть назву категорії",
   "Category type": "Тип категорії",
 
+  "Add wallet": "Додати гаманець",
+  "wallet.name": "Назва",
+  "Enter wallet name": "Введіть назву гаманця",
+  "Initial balance": "Початковий баланс",
+  "Amount": "Сума",
+  "Currency": "Валюта",
+  "Color": "Колір",
+  "Include in total balance": "Включити до загального балансу",
+  "This helps track your overall financial health": "Це допомагає відстежувати ваш загальний фінансовий стан",
+  "Choose currency": "Виберіть валюту",
+  "Enter amount": "Введіть суму",
+  "Amount must be a valid number": "Сума має бути дійсним числом",
+
   "This field is required": "Це поле є обов'язковим"
 }

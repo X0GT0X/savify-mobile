@@ -77,11 +77,11 @@ const styles = StyleSheet.create({
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     backgroundColor: 'transparent',
   },
   value: {
     fontSize: 16,
-    flex: 1,
+    marginRight: 'auto',
   },
 });

@@ -49,6 +49,44 @@ const OverviewLayout = () => {
           },
         }}
       />
+
+      <Stack.Screen
+        name="add-wallet"
+        options={{
+          title: t('Add wallet'),
+          headerTitleStyle: { color: Colors[colorScheme ?? 'light'].text },
+          headerShown: true,
+          headerBackground: () => <ThemedView collapsable={false} />,
+          presentation: 'formSheet',
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: 'fitToContents',
+          sheetInitialDetentIndex: 0,
+          contentStyle: {
+            backgroundColor: Colors[colorScheme ?? 'light'].background,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="currency-picker"
+        options={{
+          title: t('Choose currency'),
+          headerTitleStyle: { color: Colors[colorScheme ?? 'light'].text },
+          headerShown: true,
+          headerBackground: () => (
+            <ThemedView
+              collapsable={false}
+              style={{ backgroundColor: Colors[colorScheme ?? 'light'].containerBackground }}
+            />
+          ),
+          presentation: 'formSheet',
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [1],
+          contentStyle: {
+            backgroundColor: Colors[colorScheme ?? 'light'].containerBackground,
+          },
+        }}
+      />
     </Stack>
   );
 };
