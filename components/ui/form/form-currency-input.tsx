@@ -3,6 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import { FormActionInput } from '@/components/ui/form/form-action-input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { normalizeDecimalInput } from '@/tools/input-formatters';
 import { ErrorMessage } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { StyleProp, StyleSheet, TextInput, TextStyle, ViewStyle } from 'react-native';
@@ -38,6 +39,12 @@ export const FormCurrencyInput = ({
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
+  const handleAmountChange = (value: string) => {
+    // Normalize decimal input by replacing commas with dots
+    const normalizedValue = normalizeDecimalInput(value);
+    onAmountChange(normalizedValue);
+  };
+
   return (
     <ThemedView style={[styles.container, containerStyle]}>
       <ThemedView style={styles.inputRow}>
@@ -64,7 +71,7 @@ export const FormCurrencyInput = ({
             placeholderTextColor={colors.neutral}
             keyboardType="decimal-pad"
             value={amountValue}
-            onChangeText={onAmountChange}
+            onChangeText={handleAmountChange}
             onBlur={onAmountBlur}
           />
         </ThemedView>

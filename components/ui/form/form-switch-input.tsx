@@ -54,6 +54,7 @@ export const FormSwitchInput = ({
                 false: colors.background,
                 true: colors.primary,
               }}
+              thumbColor={colors.containerBackground}
             />
           )}
         </ThemedView>
