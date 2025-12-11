@@ -75,10 +75,7 @@ export const FormCurrencyInput = ({
             value={currencyValue}
             onPress={onCurrencyPress}
             showChevron={true}
-            containerStyle={[
-              styles.currencyInput,
-              hasError && { borderColor: colors.danger, borderWidth: 1 },
-            ]}
+            containerStyle={[styles.currencyInput]}
             valueStyle={styles.currencyValue}
           />
         </ThemedView>

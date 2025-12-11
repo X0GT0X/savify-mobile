@@ -72,7 +72,7 @@
   "Currency": "Currency",
   "Color": "Color",
   "Include in total balance": "Include in total balance",
-  "This helps track your overall financial health": "This helps track your overall financial health",
+  "If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance": "If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance",
   "Choose currency": "Choose currency",
   "Enter amount": "Enter amount",
   "Amount must be a valid number": "Amount must be a valid number",

@@ -23,22 +23,22 @@ import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 
 const PREDEFINED_COLORS = [
-  '#E74C3C',
-  '#E67E22',
-  '#F39C12',
-  '#2ECC71',
-  '#3498DB',
-  '#9B59B6',
-  '#1ABC9C',
-  '#34495E',
-  '#95A5A6',
-  '#E91E63',
-  '#FF5722',
-  '#CDDC39',
-  '#00BCD4',
-  '#673AB7',
-  '#795548',
-  '#607D8B',
+  '#F76E6E',
+  '#FF8A3D',
+  '#FFC84A',
+  '#33C87A',
+  '#51AEFF',
+  '#A384FF',
+  '#2ED4C2',
+  '#445A78',
+  '#AEB8C4',
+  '#FF5FA5',
+  '#FF744A',
+  '#B4D937',
+  '#49d7f1',
+  '#7674FF',
+  '#8B6C55',
+  '#6E859E',
 ];
 
 type AddWalletForm = {
@@ -142,7 +142,7 @@ const AddWalletScreen = () => {
         initialValues={{
           name: '',
           icon: AVAILABLE_ICONS[0],
-          amount: '0',
+          amount: '',
           currency: userSettings?.defaultCurrency ?? 'USD',
           color: PREDEFINED_COLORS[0],
           includeInTotalBalance: true,
@@ -207,7 +207,9 @@ const AddWalletScreen = () => {
 
               <FormSwitchInput
                 label={t('Include in total balance')}
-                description={t('This helps track your overall financial health')}
+                description={t(
+                  'If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance',
+                )}
                 value={values.includeInTotalBalance}
                 onValueChange={(value) => setFieldValue('includeInTotalBalance', value)}
                 name="includeInTotalBalance"

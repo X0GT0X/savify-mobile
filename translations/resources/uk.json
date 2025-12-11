@@ -72,7 +72,7 @@
   "Currency": "Валюта",
   "Color": "Колір",
   "Include in total balance": "Включити до загального балансу",
-  "This helps track your overall financial health": "Це допомагає відстежувати ваш загальний фінансовий стан",
+  "If you turn off the option, the account balance will be included only in analytics and will not be added to the overall balance": "Якщо вимкнути опцію, баланс рахунку буде враховуватись тільки в аналітиці, але не буде включений у загальний баланс",
   "Choose currency": "Виберіть валюту",
   "Enter amount": "Введіть суму",
   "Amount must be a valid number": "Сума має бути дійсним числом",
