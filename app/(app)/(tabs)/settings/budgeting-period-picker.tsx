@@ -1,6 +1,5 @@
 import Response from '@/api/response';
 import { DetachedLoader } from '@/components/loading/loadable-screen-view';
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import {
   useGetUserSettingsQuery,
@@ -8,18 +7,16 @@ import {
 } from '@/features/finance-tracking/settings/api';
 import { BUDGETING_PERIODS, BudgetingPeriod } from '@/features/finance-tracking/settings/settings';
 import { showNotification } from '@/features/notifications/state';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLiquidGlass } from '@/hooks/use-liquid-glass';
 import { Picker } from '@react-native-picker/picker';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ColorSchemeName, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 const BudgetingPeriodPickerScreen = () => {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme();
-  const styles = createStyles(colorScheme);
+  const headerHeight = useHeaderHeight();
   const { isLiquidGlassAvailable } = useLiquidGlass();
 
   const dispatch = useDispatch();
@@ -52,18 +49,13 @@ const BudgetingPeriodPickerScreen = () => {
     <ThemedView style={[{ flex: 1 }, isLiquidGlassAvailable && { backgroundColor: 'transparent' }]}>
       <DetachedLoader
         isLoading={isUpdatingUserSettings}
-        backgroundOpacity={0.5}
+        backgroundOpacity={0}
         animationStyle={{
           width: 75,
           height: 75,
+          marginTop: -headerHeight,
         }}
       />
-
-      <ThemedText
-        type="defaultSemiBold"
-        style={[styles.header, isLiquidGlassAvailable && { backgroundColor: 'transparent' }]}>
-        {t('Budgeting period')}
-      </ThemedText>
 
       <Picker
         selectedValue={userSettings?.budgetingPeriod}
@@ -78,15 +70,5 @@ const BudgetingPeriodPickerScreen = () => {
     </ThemedView>
   );
 };
-
-const createStyles = (colorScheme: ColorSchemeName) =>
-  StyleSheet.create({
-    header: {
-      paddingTop: 24,
-      paddingHorizontal: 24,
-      paddingBottom: 16,
-      textAlign: 'center',
-    },
-  });
 
 export default BudgetingPeriodPickerScreen;

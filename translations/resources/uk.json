@@ -54,5 +54,15 @@
 
   "Income": "Дохід",
   "Expense": "Витрата",
-  "Wallet": "Гаманець"
+  "Wallet": "Гаманець",
+  "Manage": "Керувати",
+  "Add category": "Додати категорію",
+  "Add expense category": "Додати категорію витрат",
+  "Add income category": "Додати категорію доходів",
+  "Add": "Додати",
+  "category.name": "Назва",
+  "Enter category name": "Введіть назву категорії",
+  "Category type": "Тип категорії",
+
+  "This field is required": "Це поле є обов'язковим"
 }

@@ -13,18 +13,19 @@ import {
 import { showNotification } from '@/features/notifications/state';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import IonIcons from '@expo/vector-icons/Ionicons';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { code as getCurrencyByCode } from 'currency-codes';
 import getSymbolFromCurrency from 'currency-symbol-map';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ColorSchemeName, ScrollView, StyleSheet, View } from 'react-native';
+import { ColorSchemeName, Dimensions, ScrollView, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 const MainCurrencyPickerScreen = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
+  const headerHeight = useHeaderHeight();
 
   const dispatch = useDispatch();
   const { data: userSettings } = useGetUserSettingsQuery();
@@ -56,74 +57,61 @@ const MainCurrencyPickerScreen = () => {
   };
 
   return (
-    <ThemedView
-      style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].containerBackground }}>
+    <ScrollView
+      style={styles.scrollView}
+      showsVerticalScrollIndicator={false}
+      automaticallyAdjustKeyboardInsets
+      keyboardShouldPersistTaps="handled"
+      scrollEnabled={!isLoadingSupportedCurrencies && !isUpdatingUserSettings}
+      bounces={false}>
       <DetachedLoader
         isLoading={isLoadingSupportedCurrencies || isUpdatingUserSettings}
         backgroundOpacity={0.5}
+        style={{
+          height: Dimensions.get('window').height,
+          top: -headerHeight,
+        }}
       />
 
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        automaticallyAdjustKeyboardInsets
-        keyboardShouldPersistTaps="handled"
-        bounces={false}
-        stickyHeaderIndices={[0]}>
-        <LinearGradient
-          colors={[
-            Colors[colorScheme ?? 'light'].containerBackground,
-            Colors[colorScheme ?? 'light'].containerBackground + '00',
-          ]}
-          locations={[0.9, 1]}
-          // style={{ backgroundColor: Colors[colorScheme ?? 'light'].containerBackground }}
-        >
-          <View style={styles.sheetGrabber} />
-          <ThemedText type="title" style={styles.header}>
-            {t('Main currency')}
-          </ThemedText>
-        </LinearGradient>
+      <ThemedView style={styles.currencyList}>
+        {supportedCurrencies?.map((currencyCode, index) => {
+          const isSelected = userSettings?.defaultCurrency === currencyCode;
+          const isLastItem = index === supportedCurrencies.length - 1;
+          const currencySymbol = getSymbolFromCurrency(currencyCode) ?? '';
+          const currencyName = getCurrencyName(currencyCode);
 
-        <ThemedView style={styles.currencyList}>
-          {supportedCurrencies?.map((currencyCode, index) => {
-            const isSelected = userSettings?.defaultCurrency === currencyCode;
-            const isLastItem = index === supportedCurrencies.length - 1;
-            const currencySymbol = getSymbolFromCurrency(currencyCode) ?? '';
-            const currencyName = getCurrencyName(currencyCode);
+          return (
+            <HapticTab
+              key={currencyCode}
+              style={[styles.currencyItem, isLastItem && styles.currencyItemLast]}
+              onPress={() => handleChooseCurrency(currencyCode)}>
+              <ThemedView style={styles.currencySymbolContainer}>
+                <ThemedText style={styles.currencySymbol}>{currencySymbol}</ThemedText>
+              </ThemedView>
 
-            return (
-              <HapticTab
-                key={currencyCode}
-                style={[styles.currencyItem, isLastItem && styles.currencyItemLast]}
-                onPress={() => handleChooseCurrency(currencyCode)}>
-                <ThemedView style={styles.currencySymbolContainer}>
-                  <ThemedText style={styles.currencySymbol}>{currencySymbol}</ThemedText>
-                </ThemedView>
+              <ThemedView style={styles.currencyInfo}>
+                <ThemedText type="defaultSemiBold" style={styles.currencyCode}>
+                  {currencyCode}
+                </ThemedText>
+                <ThemedText style={styles.currencyName} numberOfLines={1}>
+                  {t(currencyName)}
+                </ThemedText>
+              </ThemedView>
 
-                <ThemedView style={styles.currencyInfo}>
-                  <ThemedText type="defaultSemiBold" style={styles.currencyCode}>
-                    {currencyCode}
-                  </ThemedText>
-                  <ThemedText style={styles.currencyName} numberOfLines={1}>
-                    {t(currencyName)}
-                  </ThemedText>
-                </ThemedView>
+              {isSelected && (
+                <IonIcons
+                  name="checkmark-circle"
+                  size={24}
+                  color={Colors[colorScheme ?? 'light'].primary}
+                />
+              )}
+            </HapticTab>
+          );
+        })}
+      </ThemedView>
 
-                {isSelected && (
-                  <IonIcons
-                    name="checkmark-circle"
-                    size={24}
-                    color={Colors[colorScheme ?? 'light'].primary}
-                  />
-                )}
-              </HapticTab>
-            );
-          })}
-        </ThemedView>
-
-        <BottomSafeInset inset={24} />
-      </ScrollView>
-    </ThemedView>
+      <BottomSafeInset inset={8} />
+    </ScrollView>
   );
 };
 
@@ -134,25 +122,8 @@ const createStyles = (colorScheme: ColorSchemeName) =>
       position: 'relative',
     },
 
-    sheetGrabber: {
-      width: 36,
-      marginHorizontal: 'auto',
-      height: 5,
-      backgroundColor: Colors[colorScheme ?? 'light'].neutral,
-      borderRadius: 3,
-      marginVertical: 12,
-    },
-
-    header: {
-      paddingTop: 24,
-      paddingHorizontal: 24,
-      paddingBottom: 24,
-    },
-
     currencyList: {
       backgroundColor: Colors[colorScheme ?? 'light'].containerBackground,
-      borderRadius: 32,
-      // marginHorizontal: 24,
       overflow: 'hidden',
     },
 

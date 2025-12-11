@@ -28,6 +28,7 @@ type GridItem = {
   label: string;
   value: string;
   icon: string;
+  onPress?: () => void;
   iconColor?: string;
   fillColor?: string;
   budget?: Budget;
@@ -133,7 +134,7 @@ const OverviewGrid = ({ items, gridHorizontalCount, gridVerticalCount }: GridPro
                     {item.label}
                   </ThemedText>
                   <HapticTab
-                    onPress={() => {}}
+                    onPress={item.onPress}
                     style={[gridStyles.iconContainer, item.containerStyle]}>
                     {percentage > 0 && (
                       <>

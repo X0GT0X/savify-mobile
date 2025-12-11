@@ -54,5 +54,15 @@
 
   "Income": "Income",
   "Expense": "Expense",
-  "Wallet": "Wallet"
+  "Wallet": "Wallet",
+  "Manage": "Manage",
+  "Add category": "Add category",
+  "Add expense category": "Add expense category",
+  "Add income category": "Add income category",
+  "Add": "Add",
+  "category.name": "Name",
+  "Enter category name": "Enter category name",
+  "Category type": "Category type",
+
+  "This field is required": "This field is required"
 }

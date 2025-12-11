@@ -1,10 +1,16 @@
+import { HapticTab } from '@/components/haptic-tab';
 import LoadableScreenView from '@/components/loading/loadable-screen-view';
 import OverviewGrid, { Budget } from '@/components/overview/overview-grid';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
 import { useGetCategoriesQuery } from '@/features/finance-tracking/categories/api';
 import { useGetWalletsQuery } from '@/features/finance-tracking/wallets/api';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatMoney } from '@/tools/money';
+import IonIcons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColorSchemeName, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,11 +20,26 @@ const OverviewScreen = () => {
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
 
-  const { data: categories, isFetching: isFetchingCategories } = useGetCategoriesQuery();
-  const { data: wallets, isFetching: isFetchingWallets } = useGetWalletsQuery();
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingCategories,
+  } = useGetCategoriesQuery();
+  const {
+    data: wallets,
+    isLoading: isLoadingWallets,
+    isFetching: isFetchingWallets,
+  } = useGetWalletsQuery();
 
-  const incomeCategories = categories?.filter((category) => category.type === 'Income') ?? [];
-  const expenseCategories = categories?.filter((category) => category.type === 'Expense') ?? [];
+  const incomeCategories = useMemo(
+    () => categories?.filter((category) => category.type === 'Income') ?? [],
+    [categories],
+  );
+
+  const expenseCategories = useMemo(
+    () => categories?.filter((category) => category.type === 'Expense') ?? [],
+    [categories],
+  );
 
   // TODO: temporary; should be replaced with actual budgets data
   const budgets: Record<string, Budget> = {
@@ -45,8 +66,17 @@ const OverviewScreen = () => {
   };
 
   return (
-    <LoadableScreenView isLoading={isFetchingCategories || isFetchingWallets}>
+    <LoadableScreenView isLoading={isLoadingCategories || isLoadingWallets}>
       <SafeAreaView edges={['top']} style={styles.container}>
+        <ThemedView style={styles.header}>
+          <ThemedText type="title">{t('Overview')}</ThemedText>
+          <HapticTab onPress={() => {}} style={styles.manageButton}>
+            <ThemedText type="defaultSemiBold" style={styles.manageButtonLabel}>
+              {t('Manage')}
+            </ThemedText>
+            <IonIcons name="chevron-forward" size={20} />
+          </HapticTab>
+        </ThemedView>
         <OverviewGrid
           items={[
             ...incomeCategories
@@ -64,6 +94,11 @@ const OverviewScreen = () => {
               id: 'new-income',
               label: t('Income'),
               value: '',
+              onPress: () =>
+                router.navigate({
+                  pathname: '/(app)/(tabs)/overview/add-category',
+                  params: { categoryType: 'Income' },
+                }),
               icon: 'add@ion',
               iconColor: Colors[colorScheme ?? 'light'].primary,
               containerStyle: {
@@ -144,6 +179,11 @@ const OverviewScreen = () => {
               label: t('Expense'),
               value: '',
               icon: 'add@ion',
+              onPress: () =>
+                router.navigate({
+                  pathname: '/(app)/(tabs)/overview/add-category',
+                  params: { categoryType: 'Expense' },
+                }),
               iconColor: Colors[colorScheme ?? 'light'].primary,
               containerStyle: {
                 backgroundColor: Colors[colorScheme ?? 'light'].background,
@@ -165,6 +205,21 @@ const createStyles = (colorScheme: ColorSchemeName) =>
     container: {
       flex: 1,
       backgroundColor: Colors[colorScheme ?? 'light'].background,
+    },
+    header: {
+      paddingHorizontal: 24,
+      paddingBottom: 24,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    manageButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    manageButtonLabel: {
+      fontSize: 14,
+      lineHeight: 20,
     },
   });
 

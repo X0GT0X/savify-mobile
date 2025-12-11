@@ -8,6 +8,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 const categoriesApi = createApi({
   baseQuery: baseQueryWithReauth,
   reducerPath: 'categoriesApi',
+  tagTypes: ['Categories'],
   endpoints: (builder) => ({
     addCategory: builder.mutation<string, AddCategoryRequest>({
       query: ({ name, icon, type }) => ({
@@ -19,6 +20,7 @@ const categoriesApi = createApi({
           type,
         },
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     editCategory: builder.mutation<void, EditCategoryRequest>({
@@ -30,12 +32,14 @@ const categoriesApi = createApi({
           icon,
         },
       }),
+      invalidatesTags: ['Categories'],
     }),
 
     getCategories: builder.query<Category[], void>({
       query: () => ({
         url: '/finance-tracking/categories',
       }),
+      providesTags: ['Categories'],
     }),
   }),
 });

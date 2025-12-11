@@ -26,7 +26,7 @@ export const useBottomSafeInset = (inset?: number) => {
     setIsKeyboardVisible(false);
   };
 
-  return (isKeyboardVisible ? 0 : (inset ?? TAB_BAR_HEIGHT)) + bottom;
+  return isKeyboardVisible ? 0 : (inset ?? TAB_BAR_HEIGHT + bottom);
 };
 
 const BottomSafeInset = ({ inset }: { inset?: number }) => {

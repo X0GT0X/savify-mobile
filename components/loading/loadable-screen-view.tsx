@@ -1,7 +1,8 @@
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Image } from 'expo-image';
 import React from 'react';
-import { Image, ImageStyle, Modal, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { ImageStyle, Modal, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 type LoadableScreenViewProps = {
   isLoading: boolean;
@@ -55,6 +56,8 @@ export const DetachedLoader = ({
             : require('@/assets/animations/loader-light.gif')
         }
         style={[styles.animation, animationStyle]}
+        contentFit="contain"
+        autoplay
       />
     </View>
   );
@@ -82,12 +85,21 @@ export const Loader = ({ isLoading, backgroundOpacity }: LoaderProps) => {
               : require('@/assets/animations/loader-light.gif')
           }
           style={styles.animation}
+          contentFit="contain"
         />
       </View>
     </Modal>
   );
 };
 
+/**
+ * This component should be used ONLY for initial loading. For other cases use `DetachedLoader` or another mechanics.
+ *
+ * @param isLoading
+ * @param children
+ * @param backgroundOpacity
+ * @constructor
+ */
 const LoadableScreenView = ({
   isLoading,
   children,
