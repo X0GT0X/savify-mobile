@@ -12,7 +12,9 @@ import { Colors } from '@/constants/theme';
 import { useGetUserSettingsQuery } from '@/features/finance-tracking/settings/api';
 import { useAddWalletMutation } from '@/features/finance-tracking/wallets/api';
 import { showNotification } from '@/features/notifications/state';
-import { convertToMinorUnits, getCurrencyMinorUnits } from '@/tools/currency';
+import { convertToMinorUnits } from '@/tools/currency';
+import { parseCurrencyInput } from '@/tools/input-formatters';
+import { validateCurrencyAmount } from '@/tools/validation';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -84,8 +86,9 @@ const AddWalletScreen = () => {
   const handleSubmit = async (values: AddWalletForm) => {
     const { name, icon, amount, currency, color, includeInTotalBalance } = values;
 
-    // Convert amount to minor units based on currency
-    const amountInMinorUnits = convertToMinorUnits(parseFloat(amount), currency);
+    // Parse formatted amount (removes spaces/commas) and convert to minor units
+    const numericAmount = parseCurrencyInput(amount);
+    const amountInMinorUnits = convertToMinorUnits(numericAmount, currency);
 
     console.log({
       name,
@@ -142,21 +145,9 @@ const AddWalletScreen = () => {
 
           // Get the currency from the form context
           const currency = this.parent.currency as string;
-          const minorUnits = getCurrencyMinorUnits(currency);
 
-          // Build regex pattern based on currency's decimal places
-          // For 0 decimals: /^\d+$/
-          // For 1 decimal: /^\d+(\.\d{1})?$/
-          // For 2 decimals: /^\d+(\.\d{1,2})?$/
-          // For 3 decimals: /^\d+(\.\d{1,3})?$/
-          let pattern: RegExp;
-          if (minorUnits === 0) {
-            pattern = /^\d+$/;
-          } else {
-            pattern = new RegExp(`^\\d+(\\.\\d{1,${minorUnits}})?$`);
-          }
-
-          return pattern.test(value);
+          // Use validation helper - negative values not allowed for initial wallet balance
+          return validateCurrencyAmount(value, currency, false);
         }),
     });
   }, [t]);

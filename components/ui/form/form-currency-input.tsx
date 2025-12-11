@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import { FormActionInput } from '@/components/ui/form/form-action-input';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { normalizeDecimalInput } from '@/tools/input-formatters';
+import { formatCurrencyInput } from '@/tools/input-formatters';
 import { ErrorMessage } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { StyleProp, StyleSheet, TextInput, TextStyle, ViewStyle } from 'react-native';
@@ -16,6 +16,7 @@ export type FormCurrencyInputProps = {
   onAmountBlur?: () => void;
   onCurrencyPress: () => void;
   hasError?: boolean;
+  allowNegative?: boolean;
   name?: string;
   containerStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
@@ -30,6 +31,7 @@ export const FormCurrencyInput = ({
   onAmountBlur,
   onCurrencyPress,
   hasError = false,
+  allowNegative = false,
   name = 'amount',
   containerStyle,
   labelStyle,
@@ -40,9 +42,9 @@ export const FormCurrencyInput = ({
   const colors = Colors[colorScheme ?? 'light'];
 
   const handleAmountChange = (value: string) => {
-    // Normalize decimal input by replacing commas with dots
-    const normalizedValue = normalizeDecimalInput(value);
-    onAmountChange(normalizedValue);
+    // Format input based on currency's decimal places and negative value setting
+    const formattedValue = formatCurrencyInput(value, currencyValue, allowNegative);
+    onAmountChange(formattedValue);
   };
 
   return (
@@ -69,7 +71,7 @@ export const FormCurrencyInput = ({
             style={[styles.amountInput, { color: colors.text }]}
             placeholder="0.00"
             placeholderTextColor={colors.neutral}
-            keyboardType="decimal-pad"
+            keyboardType={allowNegative ? 'numbers-and-punctuation' : 'decimal-pad'}
             value={amountValue}
             onChangeText={handleAmountChange}
             onBlur={onAmountBlur}
