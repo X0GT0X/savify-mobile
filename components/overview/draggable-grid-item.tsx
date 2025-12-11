@@ -96,6 +96,7 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
     }
 
     const validTarget = endDrag();
+    console.log('Drop ended, validTarget:', validTarget);
 
     if (validTarget) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -119,6 +120,7 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
       });
     } else {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      console.log('No valid drop target found');
     }
   }, [endDrag, createDraggedItemData]);
 

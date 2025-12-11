@@ -22,6 +22,7 @@ interface DragDropContextType {
     id: string,
     layout: Omit<DropTargetLayout, 'itemData'>,
     targetType: ItemType,
+    itemData: any,
   ) => void;
   unregisterDropTarget: (id: string) => void;
 }
@@ -88,13 +89,20 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   };
 
   const getValidDropTargetInternal = (dragX: number, dragY: number): ValidDropTarget | null => {
+    console.log(`Checking collision at (${dragX}, ${dragY})`);
+
     for (const [id, target] of dropTargetsRef.current.entries()) {
       const { x, y, width, height, type, itemData } = target;
 
       // Check if drag position is inside target bounds
-      if (dragX >= x && dragX <= x + width && dragY >= y && dragY <= y + height) {
+      const isInside = dragX >= x && dragX <= x + width && dragY >= y && dragY <= y + height;
+
+      if (isInside) {
+        console.log(`Inside target ${id} (${type}), bounds: (${x}, ${y}, ${width}, ${height})`);
+
         // Validate drop combination
         const transactionType = getTransactionType(sourceType, type);
+        console.log(`Transaction type for ${sourceType} -> ${type}: ${transactionType}`);
 
         if (transactionType && draggedItem && id !== draggedItem.id) {
           // Extract color from containerStyle if it's an object
@@ -104,6 +112,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
             color = itemData.containerStyle.backgroundColor;
           }
 
+          console.log(`Valid drop target found: ${id}`);
           return {
             id,
             name: itemData.label,
@@ -112,15 +121,22 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
             type,
             transactionType,
           };
+        } else {
+          console.log(`Drop rejected: transactionType=${transactionType}, draggedItem=${draggedItem?.id}, targetId=${id}`);
         }
       }
     }
 
+    console.log('No collision detected');
     return null;
   };
 
   const endDrag = useCallback((): ValidDropTarget | null => {
+    console.log(`endDrag called at position (${dragPosition.x}, ${dragPosition.y}), sourceType: ${sourceType}, draggedItem: ${draggedItem?.id}`);
+    console.log(`Total drop targets: ${dropTargetsRef.current.size}`);
+
     const validTarget = getValidDropTargetInternal(dragPosition.x, dragPosition.y);
+    console.log('Valid target found:', validTarget);
 
     // Reset state
     setIsDragging(false);
@@ -134,21 +150,14 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   }, [dragPosition, sourceType, draggedItem]);
 
   const registerDropTarget = useCallback(
-    (id: string, layout: Omit<DropTargetLayout, 'itemData'>, targetType: ItemType) => {
-      // Find item data from dropTargetsRef or create minimal version
-      const existingTarget = dropTargetsRef.current.get(id);
-      const itemData = existingTarget?.itemData || {
-        id,
-        label: '',
-        value: '',
-        icon: '',
-      };
-
+    (id: string, layout: Omit<DropTargetLayout, 'itemData'>, targetType: ItemType, itemData: any) => {
       dropTargetsRef.current.set(id, {
         ...layout,
         type: targetType,
         itemData,
       });
+
+      console.log(`Registered drop target: ${id} (${targetType}) at (${layout.x}, ${layout.y}), size: ${layout.width}x${layout.height}, name: ${itemData.label}, total targets: ${dropTargetsRef.current.size}`);
     },
     [],
   );
