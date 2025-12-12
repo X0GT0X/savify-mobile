@@ -11,122 +11,109 @@ interface DropTargetGridItemProps {
   scrollVersion?: number;
 }
 
-export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
-  item,
-  targetType,
-  children,
-  scrollVersion,
-}) => {
-  const { registerDropTarget, unregisterDropTarget } = useDragDropContext();
-  const viewRef = useRef<View>(null);
-  const measureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const measureRafRef = useRef<number | null>(null);
-  const isMountedRef = useRef(true);
+export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = React.memo(
+  ({ item, targetType, children, scrollVersion }) => {
+    const { registerDropTarget, unregisterDropTarget } = useDragDropContext();
+    const viewRef = useRef<View>(null);
+    const measureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const measureRafRef = useRef<number | null>(null);
+    const isMountedRef = useRef(true);
+    const lastLayoutTimeRef = useRef<number>(0);
 
-  // Initial mount and item.id changes
-  useEffect(() => {
-    console.log(`[DropTarget ${targetType}:${item.id}] Mounted`);
-    isMountedRef.current = true;
+    // Initial mount and item.id changes
+    useEffect(() => {
+      isMountedRef.current = true;
 
-    // Measure immediately on mount, onLayout will refine if needed
-    measureAndRegister();
+      // Measure immediately on mount, onLayout will refine if needed
+      measureAndRegister();
 
-    // Cleanup only on unmount or when item.id changes
-    return () => {
-      console.log(`[DropTarget ${targetType}:${item.id}] Unmounting`);
-      isMountedRef.current = false;
+      // Cleanup only on unmount or when item.id changes
+      return () => {
+        isMountedRef.current = false;
+        if (measureTimeoutRef.current) {
+          clearTimeout(measureTimeoutRef.current);
+        }
+        if (measureRafRef.current) {
+          cancelAnimationFrame(measureRafRef.current);
+        }
+        unregisterDropTarget(item.id);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [item.id]);
+
+    // Re-measure when scrollVersion changes WITHOUT unregistering
+    useEffect(() => {
+      if (!isMountedRef.current) return;
+
+      // Clear any pending measurements
       if (measureTimeoutRef.current) {
         clearTimeout(measureTimeoutRef.current);
       }
       if (measureRafRef.current) {
         cancelAnimationFrame(measureRafRef.current);
       }
-      unregisterDropTarget(item.id);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.id]);
 
-  // Re-measure when scrollVersion changes WITHOUT unregistering
-  useEffect(() => {
-    if (!isMountedRef.current) return;
-
-    console.log(
-      `[DropTarget ${targetType}:${item.id}] ScrollVersion changed to ${scrollVersion}, re-measuring immediately`,
-    );
-
-    // Clear any pending measurements
-    if (measureTimeoutRef.current) {
-      clearTimeout(measureTimeoutRef.current);
-    }
-    if (measureRafRef.current) {
-      cancelAnimationFrame(measureRafRef.current);
-    }
-
-    // Re-measure immediately without delay
-    measureAndRegister();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollVersion]);
-
-  const measureAndRegister = () => {
-    if (viewRef.current) {
-      try {
-        viewRef.current.measureInWindow((x, y, width, height) => {
-          console.log(`[DropTarget ${targetType}:${item.id}] Measured:`, {
-            x,
-            y,
-            width,
-            height,
-            valid: width > 0 && height > 0 && x !== undefined && y !== undefined,
-          });
-
-          // Only register if we have valid measurements
-          if (width > 0 && height > 0 && x !== undefined && y !== undefined) {
-            registerDropTarget(
-              item.id,
-              {
-                x,
-                y,
-                width,
-                height,
-                type: targetType,
-              },
-              targetType,
-              item,
-            );
-            console.log(`[DropTarget ${targetType}:${item.id}] Registered successfully`);
-          } else {
-            console.warn(
-              `[DropTarget ${targetType}:${item.id}] Invalid measurements, not registering`,
-            );
-          }
-        });
-      } catch (error) {
-        console.error(`[DropTarget ${targetType}:${item.id}] Failed to measure:`, error);
-      }
-    } else {
-      console.warn(`[DropTarget ${targetType}:${item.id}] viewRef is null`);
-    }
-  };
-
-  const handleLayout = () => {
-    console.log(`[DropTarget ${targetType}:${item.id}] onLayout triggered`);
-    // Re-measure on next frame to ensure layout is complete
-    if (measureTimeoutRef.current) {
-      clearTimeout(measureTimeoutRef.current);
-    }
-    if (measureRafRef.current) {
-      cancelAnimationFrame(measureRafRef.current);
-    }
-    // Use requestAnimationFrame for optimal timing
-    measureRafRef.current = requestAnimationFrame(() => {
+      // Re-measure immediately without delay
       measureAndRegister();
-      measureRafRef.current = null;
-    });
-  };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scrollVersion]);
 
-  return (
-    <View ref={viewRef} onLayout={handleLayout} collapsable={false}>
-      {children}
-    </View>
-  );
-};
+    const measureAndRegister = () => {
+      if (viewRef.current) {
+        try {
+          viewRef.current.measureInWindow((x, y, width, height) => {
+            // Only register if we have valid measurements
+            if (width > 0 && height > 0 && x !== undefined && y !== undefined) {
+              registerDropTarget(
+                item.id,
+                {
+                  x,
+                  y,
+                  width,
+                  height,
+                  type: targetType,
+                },
+                targetType,
+                item,
+              );
+            }
+          });
+        } catch (error) {
+          // Silent fail - don't log in production
+        }
+      }
+    };
+
+    const handleLayout = () => {
+      // Debounce layout measurements to avoid excessive re-measuring during animations
+      const now = Date.now();
+      const timeSinceLastLayout = now - lastLayoutTimeRef.current;
+
+      // Skip if measured very recently (within 100ms)
+      if (timeSinceLastLayout < 100) {
+        return;
+      }
+
+      lastLayoutTimeRef.current = now;
+
+      // Re-measure on next frame to ensure layout is complete
+      if (measureTimeoutRef.current) {
+        clearTimeout(measureTimeoutRef.current);
+      }
+      if (measureRafRef.current) {
+        cancelAnimationFrame(measureRafRef.current);
+      }
+      // Use requestAnimationFrame for optimal timing
+      measureRafRef.current = requestAnimationFrame(() => {
+        measureAndRegister();
+        measureRafRef.current = null;
+      });
+    };
+
+    return (
+      <View ref={viewRef} onLayout={handleLayout} collapsable={false}>
+        {children}
+      </View>
+    );
+  },
+);

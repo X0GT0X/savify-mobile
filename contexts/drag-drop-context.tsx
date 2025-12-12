@@ -78,6 +78,8 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   });
 
   const dropTargetsRef = useRef<Map<string, DropTargetLayout>>(new Map());
+  const lastUpdateTimeRef = useRef<number>(0);
+  const throttleDelay = 16; // ~60fps
 
   const startDrag = useCallback(
     (item: DraggedItemData, itemSourceType: ItemType, position: DragPosition) => {
@@ -95,6 +97,13 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
 
   const updateDragPosition = useCallback(
     (x: number, y: number) => {
+      // Throttle updates for performance (~60fps)
+      const now = Date.now();
+      if (now - lastUpdateTimeRef.current < throttleDelay) {
+        return;
+      }
+      lastUpdateTimeRef.current = now;
+
       setDragPosition({ x, y });
 
       // Check collision and update invalid target state
@@ -188,39 +197,22 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
         itemData,
       };
       dropTargetsRef.current.set(id, dropTarget);
-      console.log(`[Context] Registered drop target ${targetType}:${id} at (${layout.x.toFixed(0)}, ${layout.y.toFixed(0)})`);
-      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
     },
     [],
   );
 
   const unregisterDropTarget = useCallback((id: string) => {
-    const existed = dropTargetsRef.current.has(id);
     dropTargetsRef.current.delete(id);
-    if (existed) {
-      console.log(`[Context] Unregistered drop target ${id}`);
-      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
-    }
   }, []);
 
   const registerScrollFunction = useCallback(
     (type: ItemType, scrollFn: (direction: 'left' | 'right') => void) => {
-      console.log(`[Context] Registering scroll function for ${type}`);
-      setScrollFunctions((prev) => {
-        const updated = { ...prev, [type]: scrollFn };
-        console.log('[Context] Updated scroll functions:', {
-          income: !!updated.income,
-          wallet: !!updated.wallet,
-          expense: !!updated.expense,
-        });
-        return updated;
-      });
+      setScrollFunctions((prev) => ({ ...prev, [type]: scrollFn }));
     },
     [],
   );
 
   const registerSectionBounds = useCallback((type: ItemType, bounds: SectionBounds) => {
-    console.log(`[Context] Registering section bounds for ${type}:`, bounds);
     setSectionBounds((prev) => ({ ...prev, [type]: bounds }));
   }, []);
 

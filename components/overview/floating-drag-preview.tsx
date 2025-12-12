@@ -8,7 +8,7 @@ import IonIcons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { ColorSchemeName, StyleSheet, View } from 'react-native';
 
-export const FloatingDragPreview: React.FC = () => {
+export const FloatingDragPreview: React.FC = React.memo(() => {
   const { isDragging, draggedItem, dragPosition, isOverInvalidTarget } = useDragDropContext();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -55,7 +55,7 @@ export const FloatingDragPreview: React.FC = () => {
       )}
     </View>
   );
-};
+});
 
 const createStyles = (colorScheme: ColorSchemeName) =>
   StyleSheet.create({

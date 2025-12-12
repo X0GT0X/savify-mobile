@@ -83,34 +83,27 @@ const OverviewGrid = ({
   );
 
   const handleScrollEnd = useCallback(() => {
-    console.log(`[OverviewGrid ${gridType}] Scroll ended, updating scrollVersion`);
     // Trigger re-measurement of all drop targets after scroll completes
-    setScrollVersion((v) => {
-      console.log(`[OverviewGrid ${gridType}] ScrollVersion: ${v} -> ${v + 1}`);
-      return v + 1;
-    });
-  }, [gridType]);
+    setScrollVersion((v) => v + 1);
+  }, []);
 
   const handleEdgeScroll = useCallback(
     (direction: 'left' | 'right') => {
       if (direction === 'left' && currentPage > 0) {
         scrollViewRef.current?.scrollTo({ x: (currentPage - 1) * screenWidth, animated: true });
         // Trigger re-measurement immediately when scrolling starts
-        console.log(`[OverviewGrid ${gridType}] Edge scroll LEFT, triggering re-measurement`);
         setScrollVersion((v) => v + 1);
       } else if (direction === 'right' && currentPage < totalPages - 1) {
         scrollViewRef.current?.scrollTo({ x: (currentPage + 1) * screenWidth, animated: true });
         // Trigger re-measurement immediately when scrolling starts
-        console.log(`[OverviewGrid ${gridType}] Edge scroll RIGHT, triggering re-measurement`);
         setScrollVersion((v) => v + 1);
       }
     },
-    [currentPage, totalPages, screenWidth, gridType],
+    [currentPage, totalPages, screenWidth],
   );
 
   // Register scroll function in context
   useEffect(() => {
-    console.log(`Registering scroll function for ${gridType}`);
     registerScrollFunction(gridType, handleEdgeScroll);
   }, [registerScrollFunction, gridType, handleEdgeScroll]);
 
@@ -118,10 +111,6 @@ const OverviewGrid = ({
   useEffect(() => {
     const measureLayout = () => {
       containerRef.current?.measure((_x, _y, _width, height, _pageX, pageY) => {
-        console.log(`[OverviewGrid ${gridType}] Measured bounds:`, {
-          y: pageY,
-          height,
-        });
         registerSectionBounds(gridType, { y: pageY, height });
       });
     };
