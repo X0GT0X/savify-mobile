@@ -5,7 +5,7 @@ import { useDragDropContext } from '@/contexts/drag-drop-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ItemType } from '@/types/drag-drop';
 import IonIcons from '@expo/vector-icons/Ionicons';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ColorSchemeName,
   Dimensions,
@@ -56,7 +56,8 @@ const OverviewGrid = ({
 }: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);
-  const { activeDropTargetId } = useDragDropContext();
+  const { activeDropTargetId, registerScrollFunction, registerSectionBounds } =
+    useDragDropContext();
 
   const screenWidth = Dimensions.get('window').width;
   const itemsPerPage = gridHorizontalCount * gridVerticalCount;
@@ -65,6 +66,7 @@ const OverviewGrid = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [scrollVersion, setScrollVersion] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const containerRef = useRef<View>(null);
 
   const pages: GridItem[][] = [];
   for (let i = 0; i < items.length; i += itemsPerPage) {
@@ -81,20 +83,53 @@ const OverviewGrid = ({
   );
 
   const handleScrollEnd = useCallback(() => {
+    console.log(`[OverviewGrid ${gridType}] Scroll ended, updating scrollVersion`);
     // Trigger re-measurement of all drop targets after scroll completes
-    setScrollVersion((v) => v + 1);
-  }, []);
+    setScrollVersion((v) => {
+      console.log(`[OverviewGrid ${gridType}] ScrollVersion: ${v} -> ${v + 1}`);
+      return v + 1;
+    });
+  }, [gridType]);
 
   const handleEdgeScroll = useCallback(
     (direction: 'left' | 'right') => {
       if (direction === 'left' && currentPage > 0) {
         scrollViewRef.current?.scrollTo({ x: (currentPage - 1) * screenWidth, animated: true });
+        // Trigger re-measurement immediately when scrolling starts
+        console.log(`[OverviewGrid ${gridType}] Edge scroll LEFT, triggering re-measurement`);
+        setScrollVersion((v) => v + 1);
       } else if (direction === 'right' && currentPage < totalPages - 1) {
         scrollViewRef.current?.scrollTo({ x: (currentPage + 1) * screenWidth, animated: true });
+        // Trigger re-measurement immediately when scrolling starts
+        console.log(`[OverviewGrid ${gridType}] Edge scroll RIGHT, triggering re-measurement`);
+        setScrollVersion((v) => v + 1);
       }
     },
-    [currentPage, totalPages, screenWidth],
+    [currentPage, totalPages, screenWidth, gridType],
   );
+
+  // Register scroll function in context
+  useEffect(() => {
+    console.log(`Registering scroll function for ${gridType}`);
+    registerScrollFunction(gridType, handleEdgeScroll);
+  }, [registerScrollFunction, gridType, handleEdgeScroll]);
+
+  // Measure and register section bounds
+  useEffect(() => {
+    const measureLayout = () => {
+      containerRef.current?.measure((_x, _y, _width, height, _pageX, pageY) => {
+        console.log(`[OverviewGrid ${gridType}] Measured bounds:`, {
+          y: pageY,
+          height,
+        });
+        registerSectionBounds(gridType, { y: pageY, height });
+      });
+    };
+
+    // Delay measurement to ensure layout is complete
+    const timer = setTimeout(measureLayout, 100);
+    return () => clearTimeout(timer);
+  }, [gridType, registerSectionBounds, items.length]);
 
   const resolveStatusColor = (status: Budget['status']) => {
     if (status === 'over') {
@@ -265,13 +300,14 @@ const OverviewGrid = ({
   };
 
   return (
-    <View style={gridStyles.container}>
+    <View ref={containerRef} style={gridStyles.container}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
+        onScrollEndDrag={handleScrollEnd}
         onMomentumScrollEnd={handleScrollEnd}
         scrollEventThrottle={16}
         decelerationRate="fast"

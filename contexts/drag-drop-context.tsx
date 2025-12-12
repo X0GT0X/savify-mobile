@@ -8,6 +8,11 @@ import {
 } from '@/types/drag-drop';
 import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 
+interface SectionBounds {
+  y: number;
+  height: number;
+}
+
 interface DragDropContextType {
   isDragging: boolean;
   draggedItem: DraggedItemData | null;
@@ -15,6 +20,10 @@ interface DragDropContextType {
   sourceType: ItemType | null;
   isOverInvalidTarget: boolean;
   activeDropTargetId: string | null;
+  activeDropTargetType: ItemType | null;
+  lastActiveDropTargetType: ItemType | null;
+  scrollFunctions: Record<ItemType, ((direction: 'left' | 'right') => void) | null>;
+  sectionBounds: Record<ItemType, SectionBounds | null>;
 
   startDrag: (item: DraggedItemData, sourceType: ItemType, position: DragPosition) => void;
   updateDragPosition: (x: number, y: number) => void;
@@ -26,6 +35,9 @@ interface DragDropContextType {
     itemData: any,
   ) => void;
   unregisterDropTarget: (id: string) => void;
+  registerScrollFunction: (type: ItemType, scrollFn: (direction: 'left' | 'right') => void) => void;
+  registerSectionBounds: (type: ItemType, bounds: SectionBounds) => void;
+  getSectionAtPosition: (y: number) => ItemType | null;
 }
 
 const DragDropContext = createContext<DragDropContextType | undefined>(undefined);
@@ -50,6 +62,20 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   const [sourceType, setSourceType] = useState<ItemType | null>(null);
   const [isOverInvalidTarget, setIsOverInvalidTarget] = useState(false);
   const [activeDropTargetId, setActiveDropTargetId] = useState<string | null>(null);
+  const [activeDropTargetType, setActiveDropTargetType] = useState<ItemType | null>(null);
+  const [lastActiveDropTargetType, setLastActiveDropTargetType] = useState<ItemType | null>(null);
+  const [scrollFunctions, setScrollFunctions] = useState<
+    Record<ItemType, ((direction: 'left' | 'right') => void) | null>
+  >({
+    income: null,
+    wallet: null,
+    expense: null,
+  });
+  const [sectionBounds, setSectionBounds] = useState<Record<ItemType, SectionBounds | null>>({
+    income: null,
+    wallet: null,
+    expense: null,
+  });
 
   const dropTargetsRef = useRef<Map<string, DropTargetLayout>>(new Map());
 
@@ -61,6 +87,8 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
       setDragPosition(position);
       setIsOverInvalidTarget(false);
       setActiveDropTargetId(null);
+      setActiveDropTargetType(null);
+      setLastActiveDropTargetType(null);
     },
     [],
   );
@@ -74,12 +102,17 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
       if (validTarget === null && hasCollision(x, y)) {
         setIsOverInvalidTarget(true);
         setActiveDropTargetId(null);
+        setActiveDropTargetType(null);
       } else if (validTarget) {
         setIsOverInvalidTarget(false);
         setActiveDropTargetId(validTarget.id);
+        setActiveDropTargetType(validTarget.type);
+        // Remember the last active drop target type for edge scrolling
+        setLastActiveDropTargetType(validTarget.type);
       } else {
         setIsOverInvalidTarget(false);
         setActiveDropTargetId(null);
+        setActiveDropTargetType(null);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,6 +173,8 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     setDragPosition({ x: 0, y: 0 });
     setIsOverInvalidTarget(false);
     setActiveDropTargetId(null);
+    setActiveDropTargetType(null);
+    setLastActiveDropTargetType(null);
 
     return validTarget;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,18 +182,60 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
 
   const registerDropTarget = useCallback(
     (id: string, layout: Omit<DropTargetLayout, 'itemData'>, targetType: ItemType, itemData: any) => {
-      dropTargetsRef.current.set(id, {
+      const dropTarget = {
         ...layout,
         type: targetType,
         itemData,
-      });
+      };
+      dropTargetsRef.current.set(id, dropTarget);
+      console.log(`[Context] Registered drop target ${targetType}:${id} at (${layout.x.toFixed(0)}, ${layout.y.toFixed(0)})`);
+      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
     },
     [],
   );
 
   const unregisterDropTarget = useCallback((id: string) => {
+    const existed = dropTargetsRef.current.has(id);
     dropTargetsRef.current.delete(id);
+    if (existed) {
+      console.log(`[Context] Unregistered drop target ${id}`);
+      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
+    }
   }, []);
+
+  const registerScrollFunction = useCallback(
+    (type: ItemType, scrollFn: (direction: 'left' | 'right') => void) => {
+      console.log(`[Context] Registering scroll function for ${type}`);
+      setScrollFunctions((prev) => {
+        const updated = { ...prev, [type]: scrollFn };
+        console.log('[Context] Updated scroll functions:', {
+          income: !!updated.income,
+          wallet: !!updated.wallet,
+          expense: !!updated.expense,
+        });
+        return updated;
+      });
+    },
+    [],
+  );
+
+  const registerSectionBounds = useCallback((type: ItemType, bounds: SectionBounds) => {
+    console.log(`[Context] Registering section bounds for ${type}:`, bounds);
+    setSectionBounds((prev) => ({ ...prev, [type]: bounds }));
+  }, []);
+
+  const getSectionAtPosition = useCallback(
+    (y: number): ItemType | null => {
+      // Check each section's bounds to see which one contains the Y position
+      for (const [type, bounds] of Object.entries(sectionBounds)) {
+        if (bounds && y >= bounds.y && y <= bounds.y + bounds.height) {
+          return type as ItemType;
+        }
+      }
+      return null;
+    },
+    [sectionBounds],
+  );
 
   const value: DragDropContextType = {
     isDragging,
@@ -167,11 +244,18 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     sourceType,
     isOverInvalidTarget,
     activeDropTargetId,
+    activeDropTargetType,
+    lastActiveDropTargetType,
+    scrollFunctions,
+    sectionBounds,
     startDrag,
     updateDragPosition,
     endDrag,
     registerDropTarget,
     unregisterDropTarget,
+    registerScrollFunction,
+    registerSectionBounds,
+    getSectionAtPosition,
   };
 
   return <DragDropContext.Provider value={value}>{children}</DragDropContext.Provider>;
