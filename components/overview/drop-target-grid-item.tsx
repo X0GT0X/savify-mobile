@@ -1,5 +1,5 @@
 import { useDragDropContext } from '@/contexts/drag-drop-context';
-import { ItemType } from '@/types/drag-drop';
+import { ItemType } from '@/features/finance-tracking/transactions/transaction';
 import React, { ReactNode, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { GridItem } from './overview-grid';

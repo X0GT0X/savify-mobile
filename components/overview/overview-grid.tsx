@@ -2,8 +2,8 @@ import { HapticTab } from '@/components/haptic-tab';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { useDragDropContext } from '@/contexts/drag-drop-context';
+import { ItemType } from '@/features/finance-tracking/transactions/transaction';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { ItemType } from '@/types/drag-drop';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {

@@ -1,7 +1,5 @@
 import { GridItem } from '@/components/overview/overview-grid';
-
-export type TransactionType = 'income' | 'transfer' | 'expense';
-export type ItemType = 'income' | 'wallet' | 'expense';
+import { ItemType, TransactionType } from '@/features/finance-tracking/transactions/transaction';
 
 export interface DraggedItemData {
   id: string;

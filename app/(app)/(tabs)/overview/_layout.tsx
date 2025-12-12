@@ -93,15 +93,13 @@ const OverviewLayout = () => {
         <Stack.Screen
           name="add-transaction"
           options={{
-            title: t('Add transaction'),
-            headerTitleStyle: { color: Colors[colorScheme ?? 'light'].text },
-            headerShown: true,
-            headerBackground: () => <ThemedView collapsable={false} />,
+            headerShown: false,
             presentation: 'formSheet',
             sheetGrabberVisible: true,
-            sheetAllowedDetents: 'fitToContents',
+            sheetAllowedDetents: [1],
             contentStyle: {
               backgroundColor: Colors[colorScheme ?? 'light'].background,
+              flex: 1,
             },
           }}
         />

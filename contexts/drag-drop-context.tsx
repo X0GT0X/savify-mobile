@@ -1,9 +1,11 @@
 import {
+  ItemType,
+  resolveTransactionType,
+} from '@/features/finance-tracking/transactions/transaction';
+import {
   DraggedItemData,
   DragPosition,
   DropTargetLayout,
-  ItemType,
-  TransactionType,
   ValidDropTarget,
 } from '@/types/drag-drop';
 import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
@@ -147,7 +149,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
 
       if (isInside) {
         // Validate drop combination
-        const transactionType = getTransactionType(sourceType, type);
+        const transactionType = resolveTransactionType(sourceType, type);
 
         if (transactionType && draggedItem && id !== draggedItem.id) {
           // Extract color from containerStyle if it's an object
@@ -257,19 +259,3 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
 
   return <DragDropContext.Provider value={value}>{children}</DragDropContext.Provider>;
 };
-
-/**
- * Determines the transaction type based on source and target types
- */
-function getTransactionType(
-  sourceType: ItemType | null,
-  targetType: ItemType,
-): TransactionType | null {
-  if (!sourceType) return null;
-
-  if (sourceType === 'income' && targetType === 'wallet') return 'income';
-  if (sourceType === 'wallet' && targetType === 'wallet') return 'transfer';
-  if (sourceType === 'wallet' && targetType === 'expense') return 'expense';
-
-  return null;
-}

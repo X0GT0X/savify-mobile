@@ -1,5 +1,6 @@
 import { useDragDropContext } from '@/contexts/drag-drop-context';
-import { DraggedItemData, ItemType } from '@/types/drag-drop';
+import { ItemType } from '@/features/finance-tracking/transactions/transaction';
+import { DraggedItemData } from '@/types/drag-drop';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
