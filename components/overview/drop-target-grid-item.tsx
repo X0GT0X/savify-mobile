@@ -8,12 +8,14 @@ interface DropTargetGridItemProps {
   item: GridItem;
   targetType: ItemType;
   children: ReactNode;
+  scrollVersion?: number;
 }
 
 export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
   item,
   targetType,
   children,
+  scrollVersion,
 }) => {
   const { registerDropTarget, unregisterDropTarget } = useDragDropContext();
   const viewRef = useRef<View>(null);
@@ -30,19 +32,19 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
       unregisterDropTarget(item.id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.id]);
+  }, [item.id, scrollVersion]);
 
   const measureAndRegister = () => {
     if (viewRef.current) {
       try {
-        viewRef.current.measure((x, y, width, height, pageX, pageY) => {
+        viewRef.current.measureInWindow((x, y, width, height) => {
           // Only register if we have valid measurements
-          if (width > 0 && height > 0 && pageX !== undefined && pageY !== undefined) {
+          if (width > 0 && height > 0 && x !== undefined && y !== undefined) {
             registerDropTarget(
               item.id,
               {
-                x: pageX,
-                y: pageY,
+                x,
+                y,
                 width,
                 height,
                 type: targetType,

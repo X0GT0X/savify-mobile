@@ -63,6 +63,7 @@ const OverviewGrid = ({
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   const [currentPage, setCurrentPage] = useState(0);
+  const [scrollVersion, setScrollVersion] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const pages: GridItem[][] = [];
@@ -78,6 +79,11 @@ const OverviewGrid = ({
     },
     [screenWidth],
   );
+
+  const handleScrollEnd = useCallback(() => {
+    // Trigger re-measurement of all drop targets after scroll completes
+    setScrollVersion((v) => v + 1);
+  }, []);
 
   const handleEdgeScroll = useCallback(
     (direction: 'left' | 'right') => {
@@ -207,7 +213,10 @@ const OverviewGrid = ({
                       item={item}
                       sourceType={gridType}
                       onEdgeScroll={handleEdgeScroll}>
-                      <DropTargetGridItem item={item} targetType={gridType}>
+                      <DropTargetGridItem
+                        item={item}
+                        targetType={gridType}
+                        scrollVersion={scrollVersion}>
                         <View
                           style={{
                             alignItems: 'center',
@@ -263,6 +272,7 @@ const OverviewGrid = ({
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
+        onMomentumScrollEnd={handleScrollEnd}
         scrollEventThrottle={16}
         decelerationRate="fast"
         snapToInterval={screenWidth}
