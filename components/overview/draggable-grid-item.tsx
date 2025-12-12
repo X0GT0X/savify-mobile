@@ -2,7 +2,7 @@ import { useDragDropContext } from '@/contexts/drag-drop-context';
 import { DraggedItemData, ItemType } from '@/types/drag-drop';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
@@ -26,9 +26,24 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
   disabled = false,
   onEdgeScroll,
 }) => {
-  const { startDrag, updateDragPosition, endDrag } = useDragDropContext();
+  const {
+    startDrag,
+    updateDragPosition,
+    endDrag,
+    scrollFunctions,
+    activeDropTargetType,
+    lastActiveDropTargetType,
+  } = useDragDropContext();
   const edgeScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const screenWidth = Dimensions.get('window').width;
+
+  useEffect(() => {
+    console.log(`[DraggableGridItem ${sourceType}] Scroll functions updated:`, {
+      income: !!scrollFunctions.income,
+      wallet: !!scrollFunctions.wallet,
+      expense: !!scrollFunctions.expense,
+    });
+  }, [scrollFunctions, sourceType]);
 
   const createDraggedItemData = useCallback((): DraggedItemData => {
     // Extract color from containerStyle if it exists
@@ -53,30 +68,59 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
 
   const handleEdgeScrolling = useCallback(
     (dragX: number) => {
-      if (!onEdgeScroll) return;
-
       // Clear any existing timeout
       if (edgeScrollTimeoutRef.current) {
         clearTimeout(edgeScrollTimeoutRef.current);
         edgeScrollTimeoutRef.current = null;
       }
 
+      // Determine which section to scroll:
+      // - If hovering over different section type → scroll target section
+      // - If not currently hovering but was recently over different section → scroll that section
+      // - Otherwise → scroll source section
+      const targetType = activeDropTargetType || lastActiveDropTargetType;
+      const scrollType =
+        targetType && targetType !== sourceType
+          ? targetType // Scroll target section (current or last known)
+          : sourceType; // Scroll source section
+
+      console.log('Edge scrolling:', {
+        sourceType,
+        activeDropTargetType,
+        lastActiveDropTargetType,
+        scrollType,
+        allScrollFunctions: {
+          income: !!scrollFunctions.income,
+          wallet: !!scrollFunctions.wallet,
+          expense: !!scrollFunctions.expense,
+        },
+        hasScrollFn: !!scrollFunctions[scrollType],
+      });
+
+      const scrollFn = scrollFunctions[scrollType];
+      if (!scrollFn) {
+        console.log(`No scroll function found for ${scrollType}`);
+        return;
+      }
+
       // Check if near left edge
       if (dragX < EDGE_THRESHOLD) {
         edgeScrollTimeoutRef.current = setTimeout(() => {
-          onEdgeScroll('left');
+          console.log(`Scrolling ${scrollType} section LEFT`);
+          scrollFn('left');
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }, EDGE_SCROLL_DELAY);
       }
       // Check if near right edge
       else if (dragX > screenWidth - EDGE_THRESHOLD) {
         edgeScrollTimeoutRef.current = setTimeout(() => {
-          onEdgeScroll('right');
+          console.log(`Scrolling ${scrollType} section RIGHT`);
+          scrollFn('right');
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }, EDGE_SCROLL_DELAY);
       }
     },
-    [onEdgeScroll, screenWidth],
+    [sourceType, activeDropTargetType, lastActiveDropTargetType, scrollFunctions, screenWidth],
   );
 
   const handleDragStart = useCallback(

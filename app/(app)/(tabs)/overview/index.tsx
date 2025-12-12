@@ -12,7 +12,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatMoney } from '@/tools/money';
 import IonIcons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColorSchemeName, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

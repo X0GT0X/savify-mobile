@@ -5,7 +5,7 @@ import { useDragDropContext } from '@/contexts/drag-drop-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ItemType } from '@/types/drag-drop';
 import IonIcons from '@expo/vector-icons/Ionicons';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ColorSchemeName,
   Dimensions,
@@ -56,7 +56,7 @@ const OverviewGrid = ({
 }: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);
-  const { activeDropTargetId } = useDragDropContext();
+  const { activeDropTargetId, registerScrollFunction } = useDragDropContext();
 
   const screenWidth = Dimensions.get('window').width;
   const itemsPerPage = gridHorizontalCount * gridVerticalCount;
@@ -95,6 +95,12 @@ const OverviewGrid = ({
     },
     [currentPage, totalPages, screenWidth],
   );
+
+  // Register scroll function in context
+  useEffect(() => {
+    console.log(`Registering scroll function for ${gridType}`);
+    registerScrollFunction(gridType, handleEdgeScroll);
+  }, [registerScrollFunction, gridType, handleEdgeScroll]);
 
   const resolveStatusColor = (status: Budget['status']) => {
     if (status === 'over') {
