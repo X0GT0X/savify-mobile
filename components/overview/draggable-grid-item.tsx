@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import React, { ReactNode, useCallback, useMemo, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runOnJS } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { GridItem } from './overview-grid';
 
 interface DraggableGridItemProps {
@@ -161,19 +161,21 @@ const DraggableGridItemComponent: React.FC<DraggableGridItemProps> = ({
         .activateAfterLongPress(200)
         .onStart((event) => {
           if (disabled) return;
-          runOnJS(handleDragStart)(event.absoluteX, event.absoluteY);
+
+          scheduleOnRN(handleDragStart, event.absoluteX, event.absoluteY);
         })
         .onUpdate((event) => {
           if (disabled) return;
-          runOnJS(updateDragPosition)(event.absoluteX, event.absoluteY);
-          runOnJS(handleEdgeScrolling)(event.absoluteX, event.absoluteY);
+          scheduleOnRN(updateDragPosition, event.absoluteX, event.absoluteY);
+          scheduleOnRN(handleEdgeScrolling, event.absoluteX, event.absoluteY);
         })
         .onEnd(() => {
           if (disabled) return;
-          runOnJS(handleDragEnd)();
+
+          scheduleOnRN(handleDragEnd);
         })
         .onFinalize(() => {
-          runOnJS(handleDragFinalize)();
+          scheduleOnRN(handleDragFinalize);
         }),
     [
       disabled,
