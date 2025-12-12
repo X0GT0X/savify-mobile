@@ -207,8 +207,6 @@ const OverviewGrid = ({
                         <View
                           style={{
                             alignItems: 'center',
-                            // paddingVertical: 12,
-                            // paddingHorizontal: 8,
                           }}>
                           <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
                             {item.label}

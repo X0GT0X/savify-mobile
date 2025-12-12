@@ -16,8 +16,8 @@ interface DraggableGridItemProps {
   onEdgeScroll?: (direction: 'left' | 'right') => void;
 }
 
-const EDGE_THRESHOLD = 50; // pixels from edge to trigger scroll
-const EDGE_SCROLL_DELAY = 300; // ms delay before triggering edge scroll
+const EDGE_THRESHOLD = 120; // pixels from edge to trigger scroll
+const EDGE_SCROLL_DELAY = 50; // ms delay before triggering edge scroll
 
 export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
   item,
@@ -151,7 +151,14 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
         .onFinalize(() => {
           runOnJS(handleDragFinalize)();
         }),
-    [disabled, handleDragStart, updateDragPosition, handleEdgeScrolling, handleDragEnd, handleDragFinalize],
+    [
+      disabled,
+      handleDragStart,
+      updateDragPosition,
+      handleEdgeScrolling,
+      handleDragEnd,
+      handleDragFinalize,
+    ],
   );
 
   if (disabled) {
