@@ -182,17 +182,25 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
 
   const registerDropTarget = useCallback(
     (id: string, layout: Omit<DropTargetLayout, 'itemData'>, targetType: ItemType, itemData: any) => {
-      dropTargetsRef.current.set(id, {
+      const dropTarget = {
         ...layout,
         type: targetType,
         itemData,
-      });
+      };
+      dropTargetsRef.current.set(id, dropTarget);
+      console.log(`[Context] Registered drop target ${targetType}:${id} at (${layout.x.toFixed(0)}, ${layout.y.toFixed(0)})`);
+      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
     },
     [],
   );
 
   const unregisterDropTarget = useCallback((id: string) => {
+    const existed = dropTargetsRef.current.has(id);
     dropTargetsRef.current.delete(id);
+    if (existed) {
+      console.log(`[Context] Unregistered drop target ${id}`);
+      console.log(`[Context] Total drop targets: ${dropTargetsRef.current.size}`);
+    }
   }, []);
 
   const registerScrollFunction = useCallback(

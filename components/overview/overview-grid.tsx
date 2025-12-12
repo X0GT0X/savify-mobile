@@ -83,9 +83,13 @@ const OverviewGrid = ({
   );
 
   const handleScrollEnd = useCallback(() => {
+    console.log(`[OverviewGrid ${gridType}] Scroll ended, updating scrollVersion`);
     // Trigger re-measurement of all drop targets after scroll completes
-    setScrollVersion((v) => v + 1);
-  }, []);
+    setScrollVersion((v) => {
+      console.log(`[OverviewGrid ${gridType}] ScrollVersion: ${v} -> ${v + 1}`);
+      return v + 1;
+    });
+  }, [gridType]);
 
   const handleEdgeScroll = useCallback(
     (direction: 'left' | 'right') => {
@@ -297,6 +301,7 @@ const OverviewGrid = ({
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
+        onScrollEndDrag={handleScrollEnd}
         onMomentumScrollEnd={handleScrollEnd}
         scrollEventThrottle={16}
         decelerationRate="fast"
