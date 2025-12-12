@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 const RootLayout = () => {
   return (
     <Provider store={store}>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <NotificationController />
           <AppContent />

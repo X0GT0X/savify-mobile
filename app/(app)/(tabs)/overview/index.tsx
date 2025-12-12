@@ -1,9 +1,11 @@
 import { HapticTab } from '@/components/haptic-tab';
 import LoadableScreenView from '@/components/loading/loadable-screen-view';
+import { FloatingDragPreview } from '@/components/overview/floating-drag-preview';
 import OverviewGrid, { Budget } from '@/components/overview/overview-grid';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
+import { useDragDropContext } from '@/contexts/drag-drop-context';
 import { useGetCategoriesQuery } from '@/features/finance-tracking/categories/api';
 import { useGetWalletsQuery } from '@/features/finance-tracking/wallets/api';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -19,6 +21,7 @@ const OverviewScreen = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
+  const { isDragging } = useDragDropContext();
 
   const { data: categories, isLoading: isLoadingCategories } = useGetCategoriesQuery();
   const { data: wallets, isLoading: isLoadingWallets } = useGetWalletsQuery();
@@ -102,6 +105,8 @@ const OverviewScreen = () => {
           ]}
           gridHorizontalCount={4}
           gridVerticalCount={1}
+          enableDragDrop={true}
+          gridType="income"
         />
 
         <View
@@ -144,6 +149,8 @@ const OverviewScreen = () => {
           ]}
           gridHorizontalCount={4}
           gridVerticalCount={1}
+          enableDragDrop={true}
+          gridType="wallet"
         />
 
         <View
@@ -187,7 +194,11 @@ const OverviewScreen = () => {
           ]}
           gridHorizontalCount={4}
           gridVerticalCount={3}
+          enableDragDrop={true}
+          gridType="expense"
         />
+
+        {isDragging && <FloatingDragPreview />}
       </SafeAreaView>
     </LoadableScreenView>
   );
