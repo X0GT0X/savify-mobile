@@ -8,6 +8,11 @@ import {
 } from '@/types/drag-drop';
 import React, { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 
+interface SectionBounds {
+  y: number;
+  height: number;
+}
+
 interface DragDropContextType {
   isDragging: boolean;
   draggedItem: DraggedItemData | null;
@@ -18,6 +23,7 @@ interface DragDropContextType {
   activeDropTargetType: ItemType | null;
   lastActiveDropTargetType: ItemType | null;
   scrollFunctions: Record<ItemType, ((direction: 'left' | 'right') => void) | null>;
+  sectionBounds: Record<ItemType, SectionBounds | null>;
 
   startDrag: (item: DraggedItemData, sourceType: ItemType, position: DragPosition) => void;
   updateDragPosition: (x: number, y: number) => void;
@@ -30,6 +36,8 @@ interface DragDropContextType {
   ) => void;
   unregisterDropTarget: (id: string) => void;
   registerScrollFunction: (type: ItemType, scrollFn: (direction: 'left' | 'right') => void) => void;
+  registerSectionBounds: (type: ItemType, bounds: SectionBounds) => void;
+  getSectionAtPosition: (y: number) => ItemType | null;
 }
 
 const DragDropContext = createContext<DragDropContextType | undefined>(undefined);
@@ -59,6 +67,11 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   const [scrollFunctions, setScrollFunctions] = useState<
     Record<ItemType, ((direction: 'left' | 'right') => void) | null>
   >({
+    income: null,
+    wallet: null,
+    expense: null,
+  });
+  const [sectionBounds, setSectionBounds] = useState<Record<ItemType, SectionBounds | null>>({
     income: null,
     wallet: null,
     expense: null,
@@ -198,6 +211,24 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     [],
   );
 
+  const registerSectionBounds = useCallback((type: ItemType, bounds: SectionBounds) => {
+    console.log(`[Context] Registering section bounds for ${type}:`, bounds);
+    setSectionBounds((prev) => ({ ...prev, [type]: bounds }));
+  }, []);
+
+  const getSectionAtPosition = useCallback(
+    (y: number): ItemType | null => {
+      // Check each section's bounds to see which one contains the Y position
+      for (const [type, bounds] of Object.entries(sectionBounds)) {
+        if (bounds && y >= bounds.y && y <= bounds.y + bounds.height) {
+          return type as ItemType;
+        }
+      }
+      return null;
+    },
+    [sectionBounds],
+  );
+
   const value: DragDropContextType = {
     isDragging,
     draggedItem,
@@ -208,12 +239,15 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     activeDropTargetType,
     lastActiveDropTargetType,
     scrollFunctions,
+    sectionBounds,
     startDrag,
     updateDragPosition,
     endDrag,
     registerDropTarget,
     unregisterDropTarget,
     registerScrollFunction,
+    registerSectionBounds,
+    getSectionAtPosition,
   };
 
   return <DragDropContext.Provider value={value}>{children}</DragDropContext.Provider>;

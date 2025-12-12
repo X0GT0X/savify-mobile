@@ -33,6 +33,7 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
     scrollFunctions,
     activeDropTargetType,
     lastActiveDropTargetType,
+    getSectionAtPosition,
   } = useDragDropContext();
   const edgeScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const screenWidth = Dimensions.get('window').width;
@@ -67,25 +68,39 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
   }, [item, sourceType]);
 
   const handleEdgeScrolling = useCallback(
-    (dragX: number) => {
+    (dragX: number, dragY: number) => {
       // Clear any existing timeout
       if (edgeScrollTimeoutRef.current) {
         clearTimeout(edgeScrollTimeoutRef.current);
         edgeScrollTimeoutRef.current = null;
       }
 
+      // Determine which section to scroll based on Y position
+      const sectionAtPosition = getSectionAtPosition(dragY);
+
       // Determine which section to scroll:
-      // - If hovering over different section type → scroll target section
-      // - If not currently hovering but was recently over different section → scroll that section
-      // - Otherwise → scroll source section
-      const targetType = activeDropTargetType || lastActiveDropTargetType;
-      const scrollType =
-        targetType && targetType !== sourceType
-          ? targetType // Scroll target section (current or last known)
-          : sourceType; // Scroll source section
+      // 1. If we're in a different section's area (based on Y coordinates) → scroll that section
+      // 2. If hovering over different section type → scroll target section
+      // 3. If not currently hovering but was recently over different section → scroll that section
+      // 4. Otherwise → scroll source section
+      let scrollType: ItemType;
+
+      if (sectionAtPosition && sectionAtPosition !== sourceType) {
+        // We're in a different section's Y-coordinate area
+        scrollType = sectionAtPosition;
+      } else {
+        // Fall back to previous logic
+        const targetType = activeDropTargetType || lastActiveDropTargetType;
+        scrollType =
+          targetType && targetType !== sourceType
+            ? targetType
+            : sourceType;
+      }
 
       console.log('Edge scrolling:', {
         sourceType,
+        dragY,
+        sectionAtPosition,
         activeDropTargetType,
         lastActiveDropTargetType,
         scrollType,
@@ -120,7 +135,14 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
         }, EDGE_SCROLL_DELAY);
       }
     },
-    [sourceType, activeDropTargetType, lastActiveDropTargetType, scrollFunctions, screenWidth],
+    [
+      sourceType,
+      activeDropTargetType,
+      lastActiveDropTargetType,
+      scrollFunctions,
+      screenWidth,
+      getSectionAtPosition,
+    ],
   );
 
   const handleDragStart = useCallback(
@@ -184,7 +206,7 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
         .onUpdate((event) => {
           if (disabled) return;
           runOnJS(updateDragPosition)(event.absoluteX, event.absoluteY);
-          runOnJS(handleEdgeScrolling)(event.absoluteX);
+          runOnJS(handleEdgeScrolling)(event.absoluteX, event.absoluteY);
         })
         .onEnd(() => {
           if (disabled) return;

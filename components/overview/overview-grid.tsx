@@ -56,7 +56,8 @@ const OverviewGrid = ({
 }: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);
-  const { activeDropTargetId, registerScrollFunction } = useDragDropContext();
+  const { activeDropTargetId, registerScrollFunction, registerSectionBounds } =
+    useDragDropContext();
 
   const screenWidth = Dimensions.get('window').width;
   const itemsPerPage = gridHorizontalCount * gridVerticalCount;
@@ -65,6 +66,7 @@ const OverviewGrid = ({
   const [currentPage, setCurrentPage] = useState(0);
   const [scrollVersion, setScrollVersion] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const containerRef = useRef<View>(null);
 
   const pages: GridItem[][] = [];
   for (let i = 0; i < items.length; i += itemsPerPage) {
@@ -101,6 +103,23 @@ const OverviewGrid = ({
     console.log(`Registering scroll function for ${gridType}`);
     registerScrollFunction(gridType, handleEdgeScroll);
   }, [registerScrollFunction, gridType, handleEdgeScroll]);
+
+  // Measure and register section bounds
+  useEffect(() => {
+    const measureLayout = () => {
+      containerRef.current?.measure((_x, _y, _width, height, _pageX, pageY) => {
+        console.log(`[OverviewGrid ${gridType}] Measured bounds:`, {
+          y: pageY,
+          height,
+        });
+        registerSectionBounds(gridType, { y: pageY, height });
+      });
+    };
+
+    // Delay measurement to ensure layout is complete
+    const timer = setTimeout(measureLayout, 100);
+    return () => clearTimeout(timer);
+  }, [gridType, registerSectionBounds, items.length]);
 
   const resolveStatusColor = (status: Budget['status']) => {
     if (status === 'over') {
@@ -271,7 +290,7 @@ const OverviewGrid = ({
   };
 
   return (
-    <View style={gridStyles.container}>
+    <View ref={containerRef} style={gridStyles.container}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
