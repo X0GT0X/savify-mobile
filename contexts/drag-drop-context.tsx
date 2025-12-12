@@ -190,7 +190,12 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   }, [dragPosition, sourceType, draggedItem]);
 
   const registerDropTarget = useCallback(
-    (id: string, layout: Omit<DropTargetLayout, 'itemData'>, targetType: ItemType, itemData: any) => {
+    (
+      id: string,
+      layout: Omit<DropTargetLayout, 'itemData'>,
+      targetType: ItemType,
+      itemData: any,
+    ) => {
       const dropTarget = {
         ...layout,
         type: targetType,

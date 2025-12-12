@@ -91,11 +91,9 @@ const OverviewGrid = ({
     (direction: 'left' | 'right') => {
       if (direction === 'left' && currentPage > 0) {
         scrollViewRef.current?.scrollTo({ x: (currentPage - 1) * screenWidth, animated: true });
-        // Trigger re-measurement immediately when scrolling starts
         setScrollVersion((v) => v + 1);
       } else if (direction === 'right' && currentPage < totalPages - 1) {
         scrollViewRef.current?.scrollTo({ x: (currentPage + 1) * screenWidth, animated: true });
-        // Trigger re-measurement immediately when scrolling starts
         setScrollVersion((v) => v + 1);
       }
     },
@@ -138,7 +136,7 @@ const OverviewGrid = ({
     if (iconType === 'ion') {
       return (
         <IonIcons
-          name={iconName}
+          name={iconName as keyof typeof IonIcons.glyphMap}
           size={28}
           style={[
             gridStyles.icon,
@@ -233,10 +231,7 @@ const OverviewGrid = ({
               return (
                 <View key={item.id} style={gridStyles.gridItem}>
                   {enableDragDrop && !isAddNew ? (
-                    <DraggableGridItem
-                      item={item}
-                      sourceType={gridType}
-                      onEdgeScroll={handleEdgeScroll}>
+                    <DraggableGridItem item={item} sourceType={gridType}>
                       <DropTargetGridItem
                         item={item}
                         targetType={gridType}
