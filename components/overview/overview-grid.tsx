@@ -95,11 +95,17 @@ const OverviewGrid = ({
     (direction: 'left' | 'right') => {
       if (direction === 'left' && currentPage > 0) {
         scrollViewRef.current?.scrollTo({ x: (currentPage - 1) * screenWidth, animated: true });
+        // Trigger re-measurement immediately when scrolling starts
+        console.log(`[OverviewGrid ${gridType}] Edge scroll LEFT, triggering re-measurement`);
+        setScrollVersion((v) => v + 1);
       } else if (direction === 'right' && currentPage < totalPages - 1) {
         scrollViewRef.current?.scrollTo({ x: (currentPage + 1) * screenWidth, animated: true });
+        // Trigger re-measurement immediately when scrolling starts
+        console.log(`[OverviewGrid ${gridType}] Edge scroll RIGHT, triggering re-measurement`);
+        setScrollVersion((v) => v + 1);
       }
     },
-    [currentPage, totalPages, screenWidth],
+    [currentPage, totalPages, screenWidth, gridType],
   );
 
   // Register scroll function in context

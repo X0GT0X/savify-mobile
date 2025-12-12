@@ -20,6 +20,7 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
   const { registerDropTarget, unregisterDropTarget } = useDragDropContext();
   const viewRef = useRef<View>(null);
   const measureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const measureRafRef = useRef<number | null>(null);
   const isMountedRef = useRef(true);
 
   // Initial mount and item.id changes
@@ -27,18 +28,18 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
     console.log(`[DropTarget ${targetType}:${item.id}] Mounted`);
     isMountedRef.current = true;
 
-    // Initial measurement
-    const timer = setTimeout(() => {
-      measureAndRegister();
-    }, 100);
+    // Measure immediately on mount, onLayout will refine if needed
+    measureAndRegister();
 
     // Cleanup only on unmount or when item.id changes
     return () => {
       console.log(`[DropTarget ${targetType}:${item.id}] Unmounting`);
       isMountedRef.current = false;
-      clearTimeout(timer);
       if (measureTimeoutRef.current) {
         clearTimeout(measureTimeoutRef.current);
+      }
+      if (measureRafRef.current) {
+        cancelAnimationFrame(measureRafRef.current);
       }
       unregisterDropTarget(item.id);
     };
@@ -50,18 +51,19 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
     if (!isMountedRef.current) return;
 
     console.log(
-      `[DropTarget ${targetType}:${item.id}] ScrollVersion changed to ${scrollVersion}, re-measuring`,
+      `[DropTarget ${targetType}:${item.id}] ScrollVersion changed to ${scrollVersion}, re-measuring immediately`,
     );
 
     // Clear any pending measurements
     if (measureTimeoutRef.current) {
       clearTimeout(measureTimeoutRef.current);
     }
+    if (measureRafRef.current) {
+      cancelAnimationFrame(measureRafRef.current);
+    }
 
-    // Re-measure without unregistering (just update position)
-    measureTimeoutRef.current = setTimeout(() => {
-      measureAndRegister();
-    }, 100);
+    // Re-measure immediately without delay
+    measureAndRegister();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollVersion]);
 
@@ -108,13 +110,18 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
 
   const handleLayout = () => {
     console.log(`[DropTarget ${targetType}:${item.id}] onLayout triggered`);
-    // Re-measure on layout changes with a small delay
+    // Re-measure on next frame to ensure layout is complete
     if (measureTimeoutRef.current) {
       clearTimeout(measureTimeoutRef.current);
     }
-    measureTimeoutRef.current = setTimeout(() => {
+    if (measureRafRef.current) {
+      cancelAnimationFrame(measureRafRef.current);
+    }
+    // Use requestAnimationFrame for optimal timing
+    measureRafRef.current = requestAnimationFrame(() => {
       measureAndRegister();
-    }, 50);
+      measureRafRef.current = null;
+    });
   };
 
   return (
