@@ -198,27 +198,45 @@ const OverviewGrid = ({
 
               return (
                 <View key={item.id} style={gridStyles.gridItem}>
-                  <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
-                    {item.label}
-                  </ThemedText>
                   {enableDragDrop && !isAddNew ? (
                     <DraggableGridItem
                       item={item}
                       sourceType={gridType}
                       onEdgeScroll={handleEdgeScroll}>
                       <DropTargetGridItem item={item} targetType={gridType}>
-                        {iconContent}
+                        <View
+                          style={{
+                            alignItems: 'center',
+                            // paddingVertical: 12,
+                            // paddingHorizontal: 8,
+                          }}>
+                          <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
+                            {item.label}
+                          </ThemedText>
+                          {iconContent}
+                          <ThemedText type="defaultSemiBold" style={gridStyles.value}>
+                            {item.value}
+                          </ThemedText>
+                          <ThemedText style={gridStyles.subvalue}>
+                            {item.budget && `/${item.budget.value}`}
+                          </ThemedText>
+                        </View>
                       </DropTargetGridItem>
                     </DraggableGridItem>
                   ) : (
-                    iconContent
+                    <>
+                      <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
+                        {item.label}
+                      </ThemedText>
+                      {iconContent}
+                      <ThemedText type="defaultSemiBold" style={gridStyles.value}>
+                        {item.value}
+                      </ThemedText>
+                      <ThemedText style={gridStyles.subvalue}>
+                        {item.budget && `/${item.budget.value}`}
+                      </ThemedText>
+                    </>
                   )}
-                  <ThemedText type="defaultSemiBold" style={gridStyles.value}>
-                    {item.value}
-                  </ThemedText>
-                  <ThemedText style={gridStyles.subvalue}>
-                    {item.budget && `/${item.budget.value}`}
-                  </ThemedText>
                 </View>
               );
             })}
