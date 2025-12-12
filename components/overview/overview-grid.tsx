@@ -1,6 +1,7 @@
 import { HapticTab } from '@/components/haptic-tab';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
+import { useDragDropContext } from '@/contexts/drag-drop-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { ItemType } from '@/types/drag-drop';
 import IonIcons from '@expo/vector-icons/Ionicons';
@@ -55,6 +56,7 @@ const OverviewGrid = ({
 }: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);
+  const { activeDropTargetId } = useDragDropContext();
 
   const screenWidth = Dimensions.get('window').width;
   const itemsPerPage = gridHorizontalCount * gridVerticalCount;
@@ -196,6 +198,8 @@ const OverviewGrid = ({
                 </HapticTab>
               );
 
+              const isActiveDropTarget = enableDragDrop && activeDropTargetId === item.id;
+
               return (
                 <View key={item.id} style={gridStyles.gridItem}>
                   {enableDragDrop && !isAddNew ? (
@@ -207,6 +211,9 @@ const OverviewGrid = ({
                         <View
                           style={{
                             alignItems: 'center',
+                            transform: isActiveDropTarget ? [{ scale: 0.95 }] : [{ scale: 1 }],
+                            opacity: isActiveDropTarget ? 0.5 : 1,
+                            backgroundColor: 'transparent',
                           }}>
                           <ThemedText type="default" style={gridStyles.label} numberOfLines={1}>
                             {item.label}

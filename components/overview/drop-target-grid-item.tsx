@@ -36,8 +36,6 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
     if (viewRef.current) {
       try {
         viewRef.current.measure((x, y, width, height, pageX, pageY) => {
-          console.log(`Measure callback for ${item.id}: x=${x}, y=${y}, width=${width}, height=${height}, pageX=${pageX}, pageY=${pageY}`);
-
           // Only register if we have valid measurements
           if (width > 0 && height > 0 && pageX !== undefined && pageY !== undefined) {
             registerDropTarget(
@@ -52,8 +50,6 @@ export const DropTargetGridItem: React.FC<DropTargetGridItemProps> = ({
               targetType,
               item,
             );
-          } else {
-            console.warn(`Invalid measurements for ${item.id}, skipping registration`);
           }
         });
       } catch (error) {

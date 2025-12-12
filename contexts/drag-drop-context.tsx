@@ -14,6 +14,7 @@ interface DragDropContextType {
   dragPosition: DragPosition;
   sourceType: ItemType | null;
   isOverInvalidTarget: boolean;
+  activeDropTargetId: string | null;
 
   startDrag: (item: DraggedItemData, sourceType: ItemType, position: DragPosition) => void;
   updateDragPosition: (x: number, y: number) => void;
@@ -48,6 +49,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   const [dragPosition, setDragPosition] = useState<DragPosition>({ x: 0, y: 0 });
   const [sourceType, setSourceType] = useState<ItemType | null>(null);
   const [isOverInvalidTarget, setIsOverInvalidTarget] = useState(false);
+  const [activeDropTargetId, setActiveDropTargetId] = useState<string | null>(null);
 
   const dropTargetsRef = useRef<Map<string, DropTargetLayout>>(new Map());
 
@@ -58,6 +60,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
       setSourceType(itemSourceType);
       setDragPosition(position);
       setIsOverInvalidTarget(false);
+      setActiveDropTargetId(null);
     },
     [],
   );
@@ -70,8 +73,13 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
       const validTarget = getValidDropTargetInternal(x, y);
       if (validTarget === null && hasCollision(x, y)) {
         setIsOverInvalidTarget(true);
+        setActiveDropTargetId(null);
+      } else if (validTarget) {
+        setIsOverInvalidTarget(false);
+        setActiveDropTargetId(validTarget.id);
       } else {
         setIsOverInvalidTarget(false);
+        setActiveDropTargetId(null);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,8 +97,6 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   };
 
   const getValidDropTargetInternal = (dragX: number, dragY: number): ValidDropTarget | null => {
-    console.log(`Checking collision at (${dragX}, ${dragY})`);
-
     for (const [id, target] of dropTargetsRef.current.entries()) {
       const { x, y, width, height, type, itemData } = target;
 
@@ -98,11 +104,8 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
       const isInside = dragX >= x && dragX <= x + width && dragY >= y && dragY <= y + height;
 
       if (isInside) {
-        console.log(`Inside target ${id} (${type}), bounds: (${x}, ${y}, ${width}, ${height})`);
-
         // Validate drop combination
         const transactionType = getTransactionType(sourceType, type);
-        console.log(`Transaction type for ${sourceType} -> ${type}: ${transactionType}`);
 
         if (transactionType && draggedItem && id !== draggedItem.id) {
           // Extract color from containerStyle if it's an object
@@ -112,7 +115,6 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
             color = itemData.containerStyle.backgroundColor;
           }
 
-          console.log(`Valid drop target found: ${id}`);
           return {
             id,
             name: itemData.label,
@@ -121,22 +123,15 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
             type,
             transactionType,
           };
-        } else {
-          console.log(`Drop rejected: transactionType=${transactionType}, draggedItem=${draggedItem?.id}, targetId=${id}`);
         }
       }
     }
 
-    console.log('No collision detected');
     return null;
   };
 
   const endDrag = useCallback((): ValidDropTarget | null => {
-    console.log(`endDrag called at position (${dragPosition.x}, ${dragPosition.y}), sourceType: ${sourceType}, draggedItem: ${draggedItem?.id}`);
-    console.log(`Total drop targets: ${dropTargetsRef.current.size}`);
-
     const validTarget = getValidDropTargetInternal(dragPosition.x, dragPosition.y);
-    console.log('Valid target found:', validTarget);
 
     // Reset state
     setIsDragging(false);
@@ -144,6 +139,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     setSourceType(null);
     setDragPosition({ x: 0, y: 0 });
     setIsOverInvalidTarget(false);
+    setActiveDropTargetId(null);
 
     return validTarget;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,8 +152,6 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
         type: targetType,
         itemData,
       });
-
-      console.log(`Registered drop target: ${id} (${targetType}) at (${layout.x}, ${layout.y}), size: ${layout.width}x${layout.height}, name: ${itemData.label}, total targets: ${dropTargetsRef.current.size}`);
     },
     [],
   );
@@ -172,6 +166,7 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
     dragPosition,
     sourceType,
     isOverInvalidTarget,
+    activeDropTargetId,
     startDrag,
     updateDragPosition,
     endDrag,

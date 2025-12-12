@@ -16,7 +16,7 @@ interface DraggableGridItemProps {
   onEdgeScroll?: (direction: 'left' | 'right') => void;
 }
 
-const EDGE_THRESHOLD = 120; // pixels from edge to trigger scroll
+const EDGE_THRESHOLD = 50; // pixels from edge to trigger scroll
 const EDGE_SCROLL_DELAY = 50; // ms delay before triggering edge scroll
 
 export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
@@ -96,7 +96,6 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
     }
 
     const validTarget = endDrag();
-    console.log('Drop ended, validTarget:', validTarget);
 
     if (validTarget) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -120,7 +119,6 @@ export const DraggableGridItem: React.FC<DraggableGridItemProps> = ({
       });
     } else {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      console.log('No valid drop target found');
     }
   }, [endDrag, createDraggedItemData]);
 
