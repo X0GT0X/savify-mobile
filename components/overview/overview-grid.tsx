@@ -52,7 +52,7 @@ const OverviewGrid = ({
   gridHorizontalCount,
   gridVerticalCount,
   enableDragDrop = false,
-  gridType = 'wallet',
+  gridType = 'Wallet',
 }: GridProps) => {
   const colorScheme = useColorScheme();
   const gridStyles = createStyles(colorScheme);

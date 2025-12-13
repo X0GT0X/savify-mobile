@@ -1,6 +1,6 @@
-export type TransactionType = 'income' | 'transfer' | 'expense';
+export type TransactionType = 'Income' | 'Transfer' | 'Expense';
 
-export type ItemType = 'income' | 'wallet' | 'expense';
+export type ItemType = 'Income' | 'Wallet' | 'Expense';
 
 /**
  * Determines the transaction type based on source and target types
@@ -11,9 +11,9 @@ export const resolveTransactionType = (
 ): TransactionType | null => {
   if (!sourceType) return null;
 
-  if (sourceType === 'income' && targetType === 'wallet') return 'income';
-  if (sourceType === 'wallet' && targetType === 'wallet') return 'transfer';
-  if (sourceType === 'wallet' && targetType === 'expense') return 'expense';
+  if (sourceType === 'Income' && targetType === 'Wallet') return 'Income';
+  if (sourceType === 'Wallet' && targetType === 'Wallet') return 'Transfer';
+  if (sourceType === 'Wallet' && targetType === 'Expense') return 'Expense';
 
   return null;
 };

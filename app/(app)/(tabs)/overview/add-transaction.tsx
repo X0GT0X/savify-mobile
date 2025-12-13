@@ -97,10 +97,10 @@ const AddTransactionScreen = () => {
 
     const getItemType = (item: typeof source | typeof target): ItemType => {
       if ('currentBalanceAmount' in item) {
-        return 'wallet';
+        return 'Wallet';
       }
 
-      return item.type === 'Income' ? 'income' : 'expense';
+      return item.type === 'Income' ? 'Income' : 'Expense';
     };
 
     const sourceType = getItemType(source);
@@ -113,58 +113,62 @@ const AddTransactionScreen = () => {
     return null; // TODO: to change with loader
   }
 
+  const TransactionFlow = () => (
+    <ThemedView
+      style={[
+        styles.sourceAndTarget,
+        {
+          backgroundColor:
+            transactionType === 'Income'
+              ? colors.success + '10'
+              : transactionType === 'Expense'
+                ? colors.danger + '10'
+                : colors.info + '10',
+        },
+      ]}>
+      <TransactionItem
+        item={{
+          name: source.name,
+          icon: source.icon,
+          color: 'color' in source ? source.color : undefined,
+          currentBalanceAmount:
+            'currentBalanceAmount' in source ? source.currentBalanceAmount : undefined,
+          currency: 'currency' in source ? source.currency : undefined,
+        }}
+        onPress={() => {}}
+      />
+
+      <View style={styles.arrowContainer}>
+        <IonIcons
+          name="arrow-forward"
+          size={24}
+          color={
+            transactionType === 'Transfer'
+              ? colors.info
+              : transactionType === 'Expense'
+                ? colors.danger
+                : colors.success
+          }
+        />
+      </View>
+
+      <TransactionItem
+        item={{
+          name: target.name,
+          icon: target.icon,
+          color: 'color' in target ? target.color : undefined,
+          currentBalanceAmount:
+            'currentBalanceAmount' in target ? target.currentBalanceAmount : undefined,
+          currency: 'currency' in target ? target.currency : undefined,
+        }}
+        onPress={() => {}}
+      />
+    </ThemedView>
+  );
+
   return (
     <SafeAreaView style={[styles.container]}>
-      <ThemedView
-        style={[
-          styles.sourceAndTarget,
-          {
-            backgroundColor:
-              transactionType === 'income'
-                ? colors.success + '10'
-                : transactionType === 'expense'
-                  ? colors.danger + '10'
-                  : colors.info + '10',
-          },
-        ]}>
-        <TransactionItem
-          item={{
-            name: source.name,
-            icon: source.icon,
-            color: 'color' in source ? source.color : undefined,
-            currentBalanceAmount:
-              'currentBalanceAmount' in source ? source.currentBalanceAmount : undefined,
-            currency: 'currency' in source ? source.currency : undefined,
-          }}
-          onPress={() => {}}
-        />
-
-        <View style={styles.arrowContainer}>
-          <IonIcons
-            name="arrow-forward"
-            size={24}
-            color={
-              transactionType === 'transfer'
-                ? colors.info
-                : transactionType === 'expense'
-                  ? colors.danger
-                  : colors.success
-            }
-          />
-        </View>
-
-        <TransactionItem
-          item={{
-            name: target.name,
-            icon: target.icon,
-            color: 'color' in target ? target.color : undefined,
-            currentBalanceAmount:
-              'currentBalanceAmount' in target ? target.currentBalanceAmount : undefined,
-            currency: 'currency' in target ? target.currency : undefined,
-          }}
-          onPress={() => {}}
-        />
-      </ThemedView>
+      <TransactionFlow />
 
       <Button label={t('Add transaction')} onPress={() => router.dismiss()} />
     </SafeAreaView>

@@ -69,14 +69,14 @@ export const DragDropProvider: React.FC<DragDropProviderProps> = ({ children }) 
   const [scrollFunctions, setScrollFunctions] = useState<
     Record<ItemType, ((direction: 'left' | 'right') => void) | null>
   >({
-    income: null,
-    wallet: null,
-    expense: null,
+    Income: null,
+    Wallet: null,
+    Expense: null,
   });
   const [sectionBounds, setSectionBounds] = useState<Record<ItemType, SectionBounds | null>>({
-    income: null,
-    wallet: null,
-    expense: null,
+    Income: null,
+    Wallet: null,
+    Expense: null,
   });
 
   const dropTargetsRef = useRef<Map<string, DropTargetLayout>>(new Map());

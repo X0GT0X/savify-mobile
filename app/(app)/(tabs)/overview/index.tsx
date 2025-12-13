@@ -106,7 +106,7 @@ const OverviewScreen = () => {
           gridHorizontalCount={4}
           gridVerticalCount={1}
           enableDragDrop={true}
-          gridType="income"
+          gridType="Income"
         />
 
         <View
@@ -150,7 +150,7 @@ const OverviewScreen = () => {
           gridHorizontalCount={4}
           gridVerticalCount={1}
           enableDragDrop={true}
-          gridType="wallet"
+          gridType="Wallet"
         />
 
         <View
@@ -195,7 +195,7 @@ const OverviewScreen = () => {
           gridHorizontalCount={4}
           gridVerticalCount={3}
           enableDragDrop={true}
-          gridType="expense"
+          gridType="Expense"
         />
 
         {isDragging && <FloatingDragPreview />}
