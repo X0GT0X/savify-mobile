@@ -34,21 +34,13 @@ interface TransactionItemProps {
     currency?: string;
   };
   onPress: () => void;
-  colors: {
-    containerBackground: string;
-    white: string;
-    text: string;
-  };
-  styles: {
-    itemContainer: any;
-    iconContainer: any;
-    itemTextContainer: any;
-    itemName: any;
-    itemBalance: any;
-  };
 }
 
-const TransactionItem = ({ item, onPress, colors, styles }: TransactionItemProps) => {
+const TransactionItem = ({ item, onPress }: TransactionItemProps) => {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const styles = createStyles(colorScheme);
+
   const backgroundColor = item.color || colors.containerBackground;
   const iconColor = item.color ? colors.white : '#AAAAAA';
 
@@ -121,19 +113,6 @@ const AddTransactionScreen = () => {
     return null; // TODO: to change with loader
   }
 
-  const getTransactionTypeLabel = () => {
-    switch (transactionType) {
-      case 'income':
-        return t('Income');
-      case 'transfer':
-        return t('Transfer');
-      case 'expense':
-        return t('Expense');
-      default:
-        return transactionType;
-    }
-  };
-
   return (
     <SafeAreaView style={[styles.container]}>
       <ThemedView
@@ -158,8 +137,6 @@ const AddTransactionScreen = () => {
             currency: 'currency' in source ? source.currency : undefined,
           }}
           onPress={() => {}}
-          colors={colors}
-          styles={styles}
         />
 
         <View style={styles.arrowContainer}>
@@ -186,38 +163,8 @@ const AddTransactionScreen = () => {
             currency: 'currency' in target ? target.currency : undefined,
           }}
           onPress={() => {}}
-          colors={colors}
-          styles={styles}
         />
       </ThemedView>
-
-      <View
-        style={[
-          styles.typeBadge,
-          {
-            backgroundColor:
-              transactionType === 'income'
-                ? colors.success + '20'
-                : transactionType === 'expense'
-                  ? colors.danger + '20'
-                  : colors.info + '20',
-          },
-        ]}>
-        <ThemedText
-          style={[
-            styles.typeText,
-            {
-              color:
-                transactionType === 'income'
-                  ? colors.success
-                  : transactionType === 'expense'
-                    ? colors.danger
-                    : colors.info,
-            },
-          ]}>
-          {getTransactionTypeLabel()}
-        </ThemedText>
-      </View>
 
       <Button label={t('Add transaction')} onPress={() => router.dismiss()} />
     </SafeAreaView>
@@ -275,16 +222,6 @@ const createStyles = (colorScheme: ColorSchemeName) =>
       fontSize: 13,
       lineHeight: 18,
       color: Colors[colorScheme ?? 'light'].neutral,
-    },
-    typeBadge: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 12,
-      alignSelf: 'flex-start',
-    },
-    typeText: {
-      fontSize: 16,
-      fontWeight: '600',
     },
   });
 
